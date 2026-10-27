@@ -1,0 +1,22 @@
+{
+  "name": "Deep-Audit",
+  "description": "Whole-repository audit across dimensions. Longest pattern; per-dimension reports aggregated into themes.",
+  "graph": {
+    "entry_points": ["gather"],
+    "nodes": ["analyze", "lens", "report"],
+    "edges": ["gather → analyze", "analyze ⟲ lens", "analyze → report"]
+  },
+  "skill_gates": ["G", "T", "A", "P", "D"],
+  "default_lenses": ["adversarial"],
+  "audit_dimensions": ["architecture", "code-health", "tests"],
+  "contract_overrides": {
+    "agency": "semi-automated",
+    "mode": "audit"
+  },
+  "recommendations": {
+    "agency": "semi-automated",
+    "estimated_time": "days",
+    "report_format": "md",
+    "description": "Repo-wide assessment; coverage stated explicitly; findings aggregated into themes."
+  }
+}

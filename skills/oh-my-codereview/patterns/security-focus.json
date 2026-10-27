@@ -1,0 +1,21 @@
+{
+  "name": "Security-Focus",
+  "description": "For changes touching auth, secrets, payments, or unsafe parsing. Security lens mandatory; strictness default fails on major.",
+  "graph": {
+    "entry_points": ["gather"],
+    "nodes": ["analyze", "lens", "report"],
+    "edges": ["gather → analyze", "analyze ⟲ lens", "analyze → report"]
+  },
+  "skill_gates": ["G", "T", "A", "P", "D"],
+  "default_lenses": ["correctness", "security", "adversarial"],
+  "contract_overrides": {
+    "agency": "semi-automated",
+    "strictness": "strict"
+  },
+  "recommendations": {
+    "agency": "semi-automated",
+    "estimated_time": "hours",
+    "report_format": "md",
+    "description": "Security-forward review; dependency and secret handling always in scope."
+  }
+}

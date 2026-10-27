@@ -1,0 +1,25 @@
+{
+  "name": "Standard",
+  "description": "Default diff-first review. Gates on; correctness + security lenses by default; adversarial lens before the report.",
+  "graph": {
+    "entry_points": ["gather"],
+    "nodes": ["analyze", "lens", "report"],
+    "edges": [
+      "gather → analyze",
+      "analyze ⟲ lens",
+      "analyze → report",
+      "lens → report"
+    ]
+  },
+  "skill_gates": ["G", "T", "A", "P", "D"],
+  "default_lenses": ["correctness", "security"],
+  "contract_overrides": {
+    "agency": "semi-automated"
+  },
+  "recommendations": {
+    "agency": "semi-automated",
+    "estimated_time": "hours",
+    "report_format": "md",
+    "description": "Normal PR/diff review with evidence gates and a verdict."
+  }
+}

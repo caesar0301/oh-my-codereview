@@ -1,0 +1,12 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+.ruff_cache/
+.pytest_cache/
+*.egg-info/
+.venv/
+venv/
+node_modules/
+.soothe/
+.codebuddy/
+.ocr/backups/

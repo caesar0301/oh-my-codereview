@@ -1,0 +1,37 @@
+{
+  "name": "oh-my-codereview",
+  "owner": {
+    "name": "Xiaming Chen",
+    "url": "https://xiaming.site/"
+  },
+  "metadata": {
+    "version": "0.1.0",
+    "description": "Orchestrator for evidence-bound code review. Auto-detects intent and review state, runs gather → deep analyze (file:line findings) → review lenses → verdict report (PASS / PASS_WITH_ISSUES / FAIL) with confirmation gates and graph-guided patterns."
+  },
+  "plugins": [
+    {
+      "name": "oh-my-codereview",
+      "description": "Evidence-bound code review orchestrator. Gather the change surface, analyze into findings with severity and file:line evidence, deepen through review lenses, deliver a verdict report as Markdown, HTML, or a GitHub comment. Diff-first; whole-repo audit as an optional mode.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Xiaming Chen",
+        "url": "https://xiaming.site/"
+      },
+      "source": "./",
+      "strict": false,
+      "skills": ["./skills/oh-my-codereview"],
+      "category": "workflow",
+      "tags": [
+        "code-review",
+        "pr-review",
+        "static-analysis",
+        "audit",
+        "orchestrator",
+        "security",
+        "correctness",
+        "oh-my-codereview",
+        "ocr"
+      ]
+    }
+  ]
+}

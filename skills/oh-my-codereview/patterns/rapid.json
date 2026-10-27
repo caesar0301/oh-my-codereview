@@ -1,0 +1,19 @@
+{
+  "name": "Rapid",
+  "description": "Fastest path to a verdict. Gates off; lenses optional; single analyze pass.",
+  "graph": {
+    "entry_points": ["gather"],
+    "nodes": ["analyze", "report"],
+    "edges": ["gather → analyze", "analyze → report"]
+  },
+  "skill_gates": {},
+  "contract_overrides": {
+    "agency": "fully-automated"
+  },
+  "recommendations": {
+    "agency": "fully-automated",
+    "estimated_time": "minutes",
+    "report_format": "md",
+    "description": "Time-boxed review; quality gates skipped; confidence graded down where unverified."
+  }
+}

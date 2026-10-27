@@ -1,0 +1,26 @@
+{
+  "name": "Loop",
+  "description": "Iterative review: author pushes fixes, recheck re-verifies findings, report updates until verdict is PASS or the user stops.",
+  "graph": {
+    "entry_points": ["gather"],
+    "nodes": ["analyze", "lens", "report", "recheck"],
+    "edges": [
+      "gather → analyze",
+      "analyze ⟲ lens",
+      "analyze → report",
+      "report → recheck",
+      "recheck → report"
+    ]
+  },
+  "skill_gates": ["G", "A", "L", "D"],
+  "default_lenses": ["correctness"],
+  "contract_overrides": {
+    "agency": "semi-automated"
+  },
+  "recommendations": {
+    "agency": "semi-automated",
+    "estimated_time": "days",
+    "report_format": "md",
+    "description": "Gate L decides per cycle: re-review the new diff vs advance to the updated report."
+  }
+}
