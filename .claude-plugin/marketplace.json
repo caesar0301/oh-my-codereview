@@ -6,12 +6,12 @@
   },
   "metadata": {
     "version": "0.1.0",
-    "description": "Orchestrator for evidence-bound code review. Auto-detects intent and review state, runs gather → deep analyze (file:line findings) → review lenses → verdict report (PASS / PASS_WITH_ISSUES / FAIL) with confirmation gates and graph-guided patterns."
+    "description": "Deep static code review of a change set (Git or SVN) that produces one structured, evidence-backed report with severity-graded findings, a conclusion, and a prioritized todo list. Language-agnostic rules stay separate from pluggable per-language packs; supports full and single-category review modes."
   },
   "plugins": [
     {
       "name": "oh-my-codereview",
-      "description": "Evidence-bound code review orchestrator. Gather the change surface, analyze into findings with severity and file:line evidence, deepen through review lenses, deliver a verdict report as Markdown, HTML, or a GitHub comment. Diff-first; whole-repo audit as an optional mode.",
+      "description": "Evidence-bound static code review. Pin the reviewed revision, map the change set, apply language-agnostic rules plus pluggable language packs, and deliver a single validated report with severity-graded findings, a conclusion, and a prioritized todo list. Diff-first; full and single-category modes.",
       "version": "0.1.0",
       "author": {
         "name": "Xiaming Chen",
@@ -25,12 +25,13 @@
         "code-review",
         "pr-review",
         "static-analysis",
-        "audit",
-        "orchestrator",
+        "diff",
+        "evidence",
+        "severity",
         "security",
-        "correctness",
+        "concurrency",
         "oh-my-codereview",
-        "ocr"
+        "omcr"
       ]
     }
   ]

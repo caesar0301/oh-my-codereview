@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- Migrated the `soothe-code-review` skill into this repo as `skills/oh-my-codereview/`, replacing the previous orchestrator-style skill
+- Renamed the skill to `oh-my-codereview` with short name **OMCR** (was OCR); rebranded README, Makefile, `.gitignore`, and marketplace manifest
+- Review output/state directory renamed `.review/` → `.omcr/`, config file `.codereview` → `.omcr`, and scripts updated accordingly
+- README and marketplace descriptions rewritten to describe the migrated static-review skill (modes, `.omcr/{review-id}/code-review.md` report, severity rubric)
+
 ## [0.1.0] - 2026-10-27
 
 ### Added

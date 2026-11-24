@@ -9,4 +9,4 @@ venv/
 node_modules/
 .soothe/
 .codebuddy/
-.ocr/backups/
+.omcr/backups/

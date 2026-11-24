@@ -14,7 +14,7 @@ PRETTIER ?= prettier
 # JSON / YAML / Markdown under the repo (exclude caches / venvs)
 FIND_PRUNE := \( -path './.git/*' -o -path './.venv/*' -o -path './venv/*' \
 	-o -path '*/node_modules/*' -o -path './.ruff_cache/*' -o -path './.soothe/*' \
-	-o -path './.ocr/*' \) -prune
+	-o -path './.omcr/*' \) -prune
 
 JSON_FILES = $(shell find . $(FIND_PRUNE) -o -type f -name '*.json' -print | sort)
 YAML_FILES = $(shell find . $(FIND_PRUNE) -o -type f \( -name '*.yml' -o -name '*.yaml' \) -print | sort)

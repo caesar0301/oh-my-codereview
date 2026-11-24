@@ -1,173 +1,295 @@
 ---
 name: oh-my-codereview
-description: Intelligent orchestrator for rigorous, evidence-bound code review. Auto-detects intent and review state, then routes to init, gather (diff, PR, commit range, or whole repo), deep analyze (findings with file:line evidence and severity), review lenses (correctness, security, performance, concurrency, API contract, test coverage), report with verdict (PASS / PASS_WITH_ISSUES / FAIL), or recheck after new commits. Single entry point for the diff-first review lifecycle.
-license: MIT
-metadata:
-  version: "0.1.0"
-  author: "Xiaming Chen"
-  category: "workflow"
+description: >-
+  Deep static code review of a change set (Git or SVN) that produces one
+  structured report with severity-graded, evidence-backed findings, a
+  conclusion, and a prioritized todo list. Language-agnostic review rules are
+  kept separate from pluggable per-language packs; Python changes are checked
+  against the vendored official Google Python Style Guide. Supports full review
+  and single-category review. Oh-My-CodeReview (OMCR) should be used when the
+  user asks for a code review, says "review this MR/PR", "review the changes", "review this
+  diff against main", asks whether a change is necessary, or asks to review
+  only one category such as security, documentation, concurrency, dependencies,
+  IO, or style.
 ---
 
-# Oh-My-CodeReview
+# Oh-My-CodeReview (OMCR)
 
-Intelligent orchestrator for **evidence-bound code review**. Auto-detects user intent and review state, then executes the right mode — initialize, gather the change surface, analyze into findings with severity and file:line evidence, deepen through review lenses, and deliver a report with an explicit verdict.
+## Overview
 
-**North star:** review findings a maintainer can trust and act on — every finding points at real code, real reasoning, and a real consequence. Not style nitpicks on a lint dump, not hallucinated line numbers.
+Perform a deep static analysis of a change set: establish exactly what changed,
+decide whether the change is warranted, then identify correctness, security,
+concurrency, dependency, documentation, and design problems and report them as
+constructive, actionable feedback.
 
-## When to Use This Skill
+- Hold two roles at once: an analysis engine (a structured, reproducible
+  workflow) and a feedback author (comments others can accept and act on).
+  Keep the tone mature and steady without ever softening rigor on correctness
+  or stability.
+- Optimize for finding bugs, sharing knowledge, and improving maintainability —
+  not for displaying cleverness, nitpicking trivia, or rewriting code to
+  personal taste.
+- Review only the requested scope. Never modify the reviewed code.
 
-- **Review** a PR, a diff, a commit range, or a working-tree change
-- **Audit** a whole repository for code health, security debt, or architecture risk
-- **Verify** that findings still hold after new commits (recheck)
-- **Deliver** a structured review report with a verdict (PASS / PASS_WITH_ISSUES / FAIL)
+Language-agnostic techniques live in `references/general/`. Language-specific
+knowledge lives only in `references/languages/{lang}/`. Keep these layers
+independent: adding a language must never require editing a general rule.
 
-**Keywords**: code review, PR review, diff review, repo audit, findings, severity, verdict, correctness, security lens, performance lens, oh-my-codereview, ocr
+### Path bases
 
-## Core Pipeline (Standard)
+Use these placeholders consistently; never write machine-specific absolute
+paths, and never refer to files outside the reviewed repository.
 
-```
-GATHER changes → [Gate G] → ANALYZE (findings + evidence) ⟲ LENS → [Gate A] → [Gate P] → REPORT (verdict)
-```
+| Placeholder | Meaning |
+| --- | --- |
+| `{CODE_HOME}` | Root of the repository under review (the VCS working-copy root). Locate it at the start; if it cannot be located, stop and ask instead of guessing. |
+| `{SKILL_HOME}` | This skill's own directory, containing `SKILL.md`, `references/`, and `scripts/`. |
+| `{REVIEW_DIR}` | `{CODE_HOME}/.omcr/{review-id}/` — the single output directory for this review. All artifacts of one review live here. |
 
-Optional: AUDIT (whole-repo mode), RECHECK (re-verify after new commits). Default pattern: **Standard**. See `references/GRAPH.md` and `patterns/`.
+Derive `review-id` from the pinned immutable revision (see step 1), optionally
+prefixed by an MR/PR number supplied by the user. Run every script with the
+environment's `python3`; scripts use only the standard library and bind to no
+virtual environment, package manager, or fixed path.
 
-Analyze and Lens form a side-cycle: when a finding's confidence is low or a risk area is unexplored, run a lens (correctness, security, performance, concurrency, API contract, test coverage), then return to analysis until the findings set is ready for the report.
+## Modes
 
-## Auto-Detection Decision Tree
+Select the mode from a single phrase in the request. When no mode is stated or
+the phrase matches nothing, use `full` without asking.
 
-The agent runs **intention detection first**, then falls back to **workspace-state detection**. Canonical op names (`init`, `gather`, `analyze`, `lens`, `report`, `recheck`, `audit`, `workflow`, `qa`) **always win** over keyword routing.
+| Mode | Trigger examples | Scope | Deliverable |
+| --- | --- | --- | --- |
+| `full` (default) | "review this MR", "code review", "review the changes" | All applicable categories | `{REVIEW_DIR}/code-review.md` |
+| `necessity` | "should this change be made?", "is this necessary?" | Necessity only | `{REVIEW_DIR}/code-review.md` |
+| `security` | "only check security" | Security only | `{REVIEW_DIR}/code-review.md` |
+| `documentation` | "only review doc consistency" | Documentation only | `{REVIEW_DIR}/code-review.md` |
+| `concurrency` | "only check concurrency" | Concurrency only | `{REVIEW_DIR}/code-review.md` |
+| `dependencies` | "only check licenses and dependencies" | Dependencies only | `{REVIEW_DIR}/code-review.md` |
+| `io` | "only check path and IO safety" | IO only | `{REVIEW_DIR}/code-review.md` |
+| `style` | "only check style" | Style only, via the applicable language pack | `{REVIEW_DIR}/code-review.md` |
+
+Rules:
+
+- Every mode produces the same single report file. Record the active mode in
+  its Basic Information section; single-category modes leave non-selected
+  categories out of the findings and mark them "not reviewed" in the overview.
+- Combine a mode with a scope freely, for example "compared with main, only
+  review documentation".
+- Produce exactly one report. All findings and details belong in that report.
+
+## Workflow
+
+The step index below is the sole authority for order, gates, and hand-offs.
+`{SKILL_HOME}/references/general/workflow.md` holds the concrete commands,
+guards, and anti-patterns; load it when executing the workflow.
 
 ```mermaid
-flowchart TD
-    START([User request]) --> OP{Canonical op<br/>in request?}
-    OP -- Yes --> RUNOP[Run named op — wins]
-    OP -- No --> INT{Intent keywords?}
-
-    INT -- LENS keywords<br/>security, performance,<br/>concurrency, correctness,<br/>test coverage, API contract --> LENS[LENS on findings]
-    INT -- GATHER signals<br/>PR URL, branch, commit range,<br/>diff, review this --> GATHER[GATHER — init-on-demand<br/>if no workspace]
-    INT -- REPORT keywords<br/>report, verdict, approve,<br/>sign off, ship it? --> REPORTGUARD{Phase-Guard:<br/>findings + gate-a present?}
-    INT -- none --> STATE[Inspect workspace state]
-
-    GATHER --> GATEG[Run Gate G:<br/>change-surface completeness]
-    GATEG --> ANALYZE
-
-    REPORTGUARD -- Yes --> REPORT[REPORT mode]
-    REPORTGUARD -- No, missing --> BLOCKREPORT[Show PHASE-GUARD<br/>offer ANALYZE first]
-
-    STATE --> S1{No AGENTS.md<br/>and no .ocr/?}
-    S1 -- Yes --> INIT[INIT]
-    S1 -- No --> S2{Change surface,<br/>no findings?}
-    S2 -- Yes --> GATEG
-    S2 -- No --> S3{Findings present,<br/>no report?}
-    S3 -- Yes --> REPORTGUARD
-    S3 -- No --> S4{loop-state active?}
-    S4 -- Yes --> GATEL[Gate L:<br/>re-review vs advance]
-    S4 -- No --> S5{New commits since<br/>findings were written?}
-    S5 -- Yes --> RECHECK[Propose RECHECK]
-    S5 -- No --> AMBIG[Ambiguous → ask user<br/>or show graph-recommended next]
-
-    GATEL --> AMBIG
-    LENS --> GATEA[Gate A / QA1]
-    GATEA --> REPORTGUARD
-    BLOCKREPORT --> ANALYZE
-    ANALYZE --> GATEA
+flowchart LR
+    S1["1. Prepare<br/>pin revision · scope"] --> S2["2. Context<br/>module + data-flow map"]
+    S2 --> S3["3. Review<br/>general rules + language packs"]
+    S3 --> S4["4. Report<br/>compose · validate · deliver"]
 ```
 
-**Always show a phase label** at the start of each action: `[INIT]`, `[GATHER]`, `[ANALYZE]`, `[LENS]`, `[REPORT]`, `[RECHECK]`, `[FINISHED]` (plus `[AUDIT]` when used).
+| # | Step | Action | Input → Output | Gate (stop and fill gaps if unmet) |
+| --- | --- | --- | --- | --- |
+| 1 | Prepare | Pin the reviewed revision to an immutable SHA; collect the requirement source; read the reviewed repository's own rules; run the diff script; apply `.omcr` filters | given scope → `{REVIEW_DIR}/changes.json` + `review-id` | Revision pinned to a SHA; `changes.json` on disk |
+| 2 | Context | Map changed modules, their place in the overall flow, and data flow across process/thread boundaries; assign a language to every changed file | `changes.json` → scope notes for the report | Every changed file has a language and belongs to the module map |
+| 3 | Review | Load general rules (always-load plus conditional ones) and the applicable language packs; produce findings with severity, category tag, and evidence | rule files + scope notes → findings | Every Critical/Major finding carries the evidence triple and a category tag |
+| 4 | Report | Compose the single report, build the graded todo list, choose a conclusion, and validate mechanically | findings → `{REVIEW_DIR}/code-review.md` | `validate_report.py` exits 0; finding counts match the report body |
 
-## Phase-Guard: Cross-Stage Jump Protection
+Hard constraints:
 
-Before routing to a stage, **read `.ocr/tree-state.json`** and check whether the target stage is `unlocked`, `ready`, or `completed`. If `locked`, verify the required **prerequisite artifacts** exist on disk before proceeding. This prevents silent stage-skipping (e.g. user says "give me a verdict" → REPORT keyword detected → but no `findings-*.md` exists).
+- Consume each step's artifacts from disk. Do not recollect or recompute data a
+  later step already produced.
+- Load only the rule files needed for the active mode and the changed code.
+  Never load the whole vendored style guide into context; use the targeted
+  lookup patterns documented in the language pack.
 
-| Target stage | Required prerequisite artifacts                                  | Required gate JSON                                              | If missing                                      |
-| ------------ | ---------------------------------------------------------------- | --------------------------------------------------------------- | ----------------------------------------------- |
-| ANALYZE      | `materials/diffs/` with ≥1 change artifact + `docs/index/` entry | `gate-g.json` (change-surface completeness, run during ANALYZE) | Route to GATHER first                           |
-| LENS         | `docs/review/findings-*.md`                                      | (none)                                                          | Route to ANALYZE first                          |
-| REPORT       | `docs/review/findings-*.md`                                      | `gate-a.json` (pass) + `gate-p.json`                            | Route to ANALYZE → LENS → Gate A → Gate P first |
-| RECHECK      | existing `findings-*.md` + a newer diff                          | (none)                                                          | Route to GATHER for the new diff first          |
+## Review categories
 
-**Blocking by default.** The agent must not proceed past a missing prerequisite without either (a) satisfying the prerequisites or (b) receiving an explicit user override (e.g. "I know, just give me the verdict" or "skip guard"). A general instruction like "review and approve" does **not** count as an override. When overridden, record `scenario_note: "prerequisite skipped by user override"` in the next gate JSON for auditability.
+The category index is the single source of tags. Use these exact tags in
+findings and in the todo list.
 
-**Tree-state staleness:** after every op, update `.ocr/tree-state.json` — move completed stages to `completed`, unlock dependents, write a brief `notes` summary. A stale tree-state signals an interrupted workflow; check and refresh it at the start of any new op.
+| Tag | Check | Rule file (prefix `{SKILL_HOME}/references/`) |
+| --- | --- | --- |
+| `[necessity]` | Responsibility boundary, real demand, benefit vs cost, reuse and composition | `general/necessity.md` |
+| `[security]` | Untrusted input, injection, unsafe deserialization, secrets | `general/scanning.md` |
+| `[bug]` | Null/empty paths, boundary conditions, state, silent failure | `general/scanning.md` |
+| `[performance]` | Repeated work, unbounded growth, blocking hot paths | `general/scanning.md` |
+| `[resources]` | Leaked handles, missing cleanup, temporary artifacts | `general/scanning.md` |
+| `[testing]` | Coverage of happy/boundary/error paths, determinism | `general/scanning.md` |
+| `[conciseness]` | Quantifiable logic duplication only | `general/scanning.md` |
+| `[documentation]` | Document-to-code contract consistency | `general/documentation.md` |
+| `[concurrency]` | Data races, locking, pool lifetime, thread affinity | `general/concurrency.md` |
+| `[dependencies]` | License, version pinning, supply chain, attribution | `general/dependencies.md` |
+| `[io]` | Path safety, credential propagation, consumer compatibility | `general/io.md` |
+| `[style]` | Language-specific style and idiom | `languages/{lang}/review-checklist.md` |
 
-## Operation Modes
+Loading strategy:
 
-| Mode     | Op                                                               | One-line                                                                                                            | Detail                                     |
-| -------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| INIT     | `init "<target>"`                                                | Bootstrap review workspace (only `AGENTS.md` + `.ocr/*.json`; no empty folders)                                     | `references/INIT/init.md`                  |
-| GATHER   | `gather <pr\|diff\|range\|repo>`                                 | Change surface: diff, commits, touched files, callers/callees context, related tests, CI logs → materials + indexes | `references/GATHER/gather.md`              |
-| ANALYZE  | `analyze`                                                        | Findings with severity, category, file:line evidence, and consequence; Gate G before, Gate A / QA1 after            | `references/ANALYZE/analyze.md`            |
-| LENS     | `lens [name]`                                                    | Structured review pass on the findings set (never on vibes); stamps `confirmed`/`refined`/`downgraded`/`withdrawn`  | `references/LENS/lens.md`                  |
-| REPORT   | `report [--format md\|html\|gh-comment] [--audience] [--strict]` | Verdict report: summary, findings ordered by severity, fix guidance, explicit verdict                               | `references/REPORT/report.md`              |
-| RECHECK  | `recheck`                                                        | New commits landed: blast-radius over findings, withdraw stale, re-verify changed                                   | `references/RECHECK/recheck.md`            |
-| AUDIT    | `audit [--focus]`                                                | Whole-repo mode: architecture, code health, dependency risk, security debt                                          | `references/AUDIT/audit.md`                |
-| VERSION  | —                                                                | Workspace artifact versioning: tag, history, diff, backup, list                                                     | `references/VERSION/version.md`            |
-| WORKFLOW | `workflow [--pattern P]`                                         | Graph-driven multi-step Standard (or other pattern)                                                                 | `references/WORKFLOW/workflow-overview.md` |
-| QA       | `qa qa1\|qa2\|all\|state-check`                                  | LLM QA checklists; `state-check` reconciles disk vs tree-state                                                      | `references/GATES.md`                      |
+- Always load `general/workflow.md`, `general/scanning.md`,
+  `general/documentation.md`, `general/severity-and-feedback.md`, and
+  `general/reporting.md`.
+- Load `general/necessity.md` when the change adds behavior or when the mode is
+  `necessity`; load `general/concurrency.md` when shared state, threads, or
+  async work is touched; `general/dependencies.md` when a dependency or license
+  changes; `general/io.md` when code reads or writes paths or streams.
+- In a single-category mode, load only that category's rule file plus
+  `general/reporting.md` and `general/severity-and-feedback.md`.
+- Do not report problems already covered by the repository's own automated
+  formatting/lint checks (unused declarations, formatting, declaration ordering)
+  unless they change behavior.
 
-## Confirmation Gates
+## Language packs
 
-Default **semi-automated** (pause for confirm). Support "no confirmations" / quick-pass. Rapid pattern skips all gates (fully-automated).
+Dispatch by the `language` field that `analyze_git_diff.py` writes for each
+changed file:
 
-| Gate    | When                                                                                                                                                          |
-| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| G       | After GATHER: change-surface completeness — all touched files, tests, and context captured? Shows coverage report; asks user: gather more context or proceed? |
-| L       | Loop pattern: re-review vs advance                                                                                                                            |
-| A / QA1 | After ANALYZE findings, before unlock REPORT                                                                                                                  |
-| T       | After LENS: re-gather context from surfaced gaps?                                                                                                             |
-| B       | Only if a blocking-dispute resolution runs (author pushes back on a finding)                                                                                  |
-| P       | Before REPORT: format / audience / strictness / severity ordering                                                                                             |
-| Lenses  | Correctness → Security → Adversarial before Gate D                                                                                                            |
-| D / QA2 | Before publishing REPORT                                                                                                                                      |
+1. Group changed files by `language`.
+2. For each group with a directory at
+   `{SKILL_HOME}/references/languages/{language}/`, load that pack's `README.md`
+   first, then the rule files it names.
+3. For a group without a pack, apply the general rules only and record in the
+   report that no language pack exists for it. Do not invent language-specific
+   rules.
+4. Apply general rules to every file; language packs only add
+   language-specific instantiations and never weaken a general rule.
 
-**Post-Step Routing Menu** (after Gate G / Gate A / LENS proceed / Gate T / Gate B): (1) Pause at each gate (default) · (2) Quick pass · (3) Continue recommended (next graph edge) · (4) Run LENS · (5) Switch pattern · (6) Stop.
+`{SKILL_HOME}/references/languages/README.md` defines the pack contract,
+precedence, and the "add a new language" procedure. To extend this skill to a
+new language, add one pack directory; no general rule changes are needed (the
+file map below may optionally be updated).
 
-## Default Paths
+## Severity
 
-Paths below are **logical destinations**. Create a folder only when writing the first file into it (see `references/INIT/init.md`).
+| Level | Meaning |
+| --- | --- |
+| Critical | Must fix: functional defect, security flaw, data race, wrong documented contract |
+| Major | Should fix: performance, quality, maintainability |
+| Minor | Optional: style, best practice |
+| Learning | Educational note, no action required |
+| Praise | Something done well; report good work as well as problems |
 
-**Two surfaces.** `deliverables/` at the project root is the only public, reader-facing surface — the review report a maintainer reads lands there. `materials/`, `docs/`, and `.ocr/` are private working state and never leave the workspace.
+Conclusions: `Approve` / `Comment` (minor suggestions) / `Request Changes`
+(must be addressed). Full definitions, the feedback tone, common traps, and
+disagreement handling are in
+`{SKILL_HOME}/references/general/severity-and-feedback.md`.
 
-| Artifact                   | Path (when content exists)                                                             |
-| -------------------------- | -------------------------------------------------------------------------------------- |
-| State (private)            | `.ocr/` (tree-state, pattern, review-state; other JSON as needed)                      |
-| Change surface (private)   | `materials/{diffs,commits,context,tests,ci,failed}/` — only buckets that receive files |
-| Indexes (private)          | `docs/index/` (`changes-index.json`)                                                   |
-| Review artifacts (private) | `docs/review/` — findings, risk map, verdict draft, dispute notes                      |
-| Audit artifacts (private)  | `docs/audit/` — audit scopes, dimension reports                                        |
-| **Report (public)**        | **`deliverables/`** — exported `<target>-review-<lang>.md\|html` or gh-comment body    |
-| Archive (private)          | `docs/archive/`                                                                        |
+## Report
 
-Templates: `assets/`. Patterns: `patterns/`. Full operation reference: `references/REFERENCE.md`.
+Produce exactly one file, `{REVIEW_DIR}/code-review.md`. Its required section
+headings (the authoritative skeleton, encoded as `REQUIRED_SECTIONS` in
+`scripts/validate_report.py` and described in prose in
+`general/reporting.md`) are:
 
-## Best Practices
+```
+# Code Review Report
+## 1. Basic Information
+## 2. Results Overview
+## 3. Findings
+### 3.1 Critical
+### 3.2 Major
+### 3.3 Minor
+### 3.4 Learning
+### 3.5 Praise
+## 4. Conclusion and Todo
+## 5. Appendix: Review Metadata
+```
 
-1. Trust auto-detection; override with canonical ops when needed
-2. **Phase-Guard before every stage (blocking by default)** — read `.ocr/tree-state.json`, check prerequisites, show `[PHASE-GUARD]` if missing; never silently skip a stage
-3. Never create empty directories — mkdir only as the parent of a real file write
-4. **Every finding is evidence-bound** — file:line against the gathered diff or file, quoted code, reasoning chain, and a concrete consequence; a finding without evidence is withdrawn, not published
-5. Use LENS (correctness / security / adversarial) before Gate A when confidence is low — in Standard, the correctness and security lenses are offered by default before the report
-6. **Run Gate G after every gather batch** — show the change-surface coverage report; warn if tests or context for touched files are missing without an explicit opt-out. Prevents reviewing a diff with no surrounding code
-7. Severity is a rubric, not a mood — `blocker` (must fix before merge), `major` (should fix), `minor` (nice to fix), `nit` (taste); apply `assets/templates/verdict-rubric.md` when mapping severity counts to a verdict
-8. Verify claims mechanically where possible — run tests, type checks, and builds before asserting "this breaks"; if you cannot run them, say so and grade confidence down
-9. Keep internal traceability private; the published report reads like a normal review comment — no gate names, no tree-state jargon
-10. Write the report to disk; reply in chat with summary only
-11. **Update `.ocr/tree-state.json` after every op** — move completed stages to `completed`, unlock next stages; never leave tree-state stale
-12. **Recheck, do not re-review from zero** — when new commits land, diff against the gathered surface and carry forward still-valid findings
+- Render every `{{var}}` placeholder; `{CODE_HOME}`, `{SKILL_HOME}`,
+  `{REVIEW_DIR}` are path bases, not placeholders.
+- Reference sibling artifacts in `{REVIEW_DIR}` by filename only, for example
+  `changes.json`.
+- Findings, not process narration, are the substance of the report. Every
+  Critical/Major finding gives location, description, evidence triple, and a
+  concrete suggestion.
+- Validate before delivery:
+  `python3 {SKILL_HOME}/scripts/validate_report.py {REVIEW_DIR}/code-review.md --review-dir {REVIEW_DIR}`.
+  A non-zero exit means fix the report and re-run; never deliver a failing
+  validation.
 
-## Dependencies
+## Scripts
 
-- Read/write project workspace; read access to the target repository (same machine or via a gathered diff)
-- Agent-authored state under `.ocr/` (tree, loop, review-state, quality-gates) — see `references/LLM-STATE.md`
-- Git available for diffs, commit ranges, and blame; `gh` CLI optional for PR metadata and posting comments
-- Mechanical scripts planned (not yet shipped): diff-surface collector, finding lint (fabricated line numbers, leaked jargon), report renderer
+| Script | Purpose | Command |
+| --- | --- | --- |
+| `analyze_git_diff.py` | Git/SVN diff analysis into `changes.json`; includes config/manifest files so dependency and CI changes are visible | `--range <range> [--vcs git\|svn\|auto] [--files ...] [--output file.json] [--format json\|markdown] [--verbose] [--no-config]` |
+| `validate_report.py` | Mechanical report check: section skeleton, leftover placeholders, existing sibling references | `<report.md> [--review-dir <dir>] [--json]` |
 
-## Deep Dive
+Both are standard-library-only and expose `--help`. `validate_report.py` uses
+`0` pass / `1` finding / `2` usage or input error; `analyze_git_diff.py` uses
+`0` success (including an empty change set) / `1` VCS or runtime failure.
+Consult each script's `--help` for details.
 
-- `references/REFERENCE.md` — complete operation guide, artifact naming, evidence boundaries, tree state, troubleshooting
-- `references/GRAPH.md` — pattern graphs, node ↔ artifact contracts, unlock rules, cycles
-- `references/GATES.md` — gate definitions and QA checklists
-- `references/LLM-STATE.md` — agent-owned state JSON schemas
-- `references/GATHER/gather.md` — change-surface buckets and completeness checks
-- `references/LENS/lens.md` — the six review lenses and stamp semantics
-- `references/REPORT/report.md` — verdict rubric, report shape, publishing rules
+## Knowledge ownership
+
+| Asset | Owner | Location |
+| --- | --- | --- |
+| General review methods, evidence rules, output format | Ships with this skill | `{SKILL_HOME}/` |
+| Language-specific style and idiom | Ships with this skill, per pack | `{SKILL_HOME}/references/languages/` |
+| Project rules, architecture constraints, interface contracts | The reviewed repository | Read from `{CODE_HOME}` at review time; these override bundled defaults on conflict |
+| Historical defect context | The reviewed repository | Consulted from `{CODE_HOME}` at review time when available |
+
+The reviewing agent supplies code search, file reading, and reasoning. This
+skill supplies only process and assets; it assumes no particular agent or
+runtime environment and depends on no other skill.
+
+## Traps
+
+Avoid perfectionism (blocking a change over taste), scope creep (smuggling in
+unrelated requests), inconsistent standards (different bars for different
+authors), rubber-stamping (approving without reading), and bikeshedding
+(arguing trivia). On disagreement, first understand the author's reasoning,
+acknowledge what is sound, use data, escalate to an architect only when
+necessary, and let non-critical points go.
+
+## Boundaries
+
+- Static analysis only. The skill does not execute reviewed code or run its
+  tests; security and performance conclusions are pattern-based, not runtime
+  observations.
+- When dynamic verification is needed, point to the reviewed repository's own
+  test entry points and mark the finding as "requires dynamic verification".
+- Never modify the reviewed code; deliver findings only.
+- Missing optional tooling, an unavailable VCS, or an unreadable requirement
+  source is an environment note, not a code defect. Record it and continue.
+
+## FAQ
+
+- **VCS detection fails** → pass `--vcs git|svn` explicitly to
+  `analyze_git_diff.py`.
+- **Comparing with a main branch** → `--range main...HEAD` (or
+  `origin/main...HEAD`) passes straight through to the diff tool.
+- **Validation fails on a missing section** → add that heading per
+  `general/reporting.md`; on leftover placeholders, render every `{{var}}`; on
+  a missing sibling artifact, create it or correct the filename.
+- **Where are the artifacts?** → all in `.omcr/{review-id}/`; record the
+  pinned SHA and the id in the report's Basic Information.
+- **No language pack for a changed file** → review it with general rules and
+  state the gap in the report; optionally add a pack following
+  `references/languages/README.md`.
+
+## File map
+
+```
+oh-my-codereview/
+├── SKILL.md                         # Entry point: modes, workflow index, dispatch, hard rules
+├── references/
+│   ├── general/                     # Language-agnostic layer (language-neutral by contract)
+│   │   ├── workflow.md              # Execution steps, commands, guards, anti-patterns
+│   │   ├── scanning.md              # Security / bugs / performance / resources / testing / conciseness
+│   │   ├── necessity.md             # Necessity assessment
+│   │   ├── documentation.md         # Document-to-code consistency
+│   │   ├── concurrency.md           # Language-neutral concurrency safety
+│   │   ├── dependencies.md          # License and dependency risk
+│   │   ├── io.md                    # Path and IO safety
+│   │   ├── severity-and-feedback.md # Severity, conclusions, tone, traps, boundaries
+│   │   └── reporting.md             # Single-report format and evidence rules
+│   └── languages/                   # Extensible language-specific layer
+│       ├── README.md                # Pack contract + how to add a language
+│       └── python/
+│           ├── README.md            # Pack index + targeted lookup patterns
+│           ├── google-python-style-guide.md  # Official guide, verbatim + attribution
+│           └── review-checklist.md  # Python instantiations of general rules
+└── scripts/
+    ├── analyze_git_diff.py          # Diff analysis → changes.json
+    └── validate_report.py           # Report skeleton validation
+```
