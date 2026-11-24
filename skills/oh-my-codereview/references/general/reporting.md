@@ -41,9 +41,9 @@ before validation.
 
 One row per category tag, with a status and finding count:
 
-| Tag | Status | Findings |
-| --- | --- | --- |
-| `[security]` | reviewed / not reviewed / no pack | count |
+| Tag          | Status                            | Findings |
+| ------------ | --------------------------------- | -------- |
+| `[security]` | reviewed / not reviewed / no pack | count    |
 
 Status must be `not reviewed` for categories outside the active mode. Counts
 here must equal the number of findings actually written in section 3. Always

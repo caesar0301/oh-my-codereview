@@ -2,13 +2,13 @@
 
 ## 1. Severity levels
 
-| Level | Meaning |
-| --- | --- |
+| Level        | Meaning                                                                                                                             |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
 | **Critical** | Must fix: functional defect, security flaw, data race or lost concurrency result, or a documented contract contradicted by behavior |
-| **Major** | Should fix: performance, quality, maintainability, or a workaround whose removal condition has passed |
-| **Minor** | Optional: style, best practice, small clarity gains |
-| **Learning** | Educational note; no action required |
-| **Praise** | Something done well — report good work as well as problems |
+| **Major**    | Should fix: performance, quality, maintainability, or a workaround whose removal condition has passed                               |
+| **Minor**    | Optional: style, best practice, small clarity gains                                                                                 |
+| **Learning** | Educational note; no action required                                                                                                |
+| **Praise**   | Something done well — report good work as well as problems                                                                          |
 
 Grade the **impact of the behavior**, not the size of the diff. A one-line error
 with a security consequence is Critical; a hundred lines of consistent

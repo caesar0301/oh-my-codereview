@@ -22,14 +22,14 @@ precedence order — and the conflict should be cited in the report appendix.
 `review-checklist.md` instantiates these general tags with Python-specific
 patterns:
 
-| General rule file | Tags instantiated | Python pack adds |
-| --- | --- | --- |
-| `../../general/scanning.md` | `[security]`, `[bug]`, `[performance]`, `[resources]`, `[testing]`, `[conciseness]` | Concrete unsafe APIs, mutable defaults, exception breadth, context managers, membership structures, test determinism |
-| `../../general/documentation.md` | `[documentation]` | Google-style docstring sections, default/enum/`Raises` alignment, runnable examples |
-| `../../general/concurrency.md` | `[concurrency]` | Executor lifetime, synchronization primitives |
-| `../../general/io.md` | `[io]` | Path composition, temporary-file handling, stream versus local-path consumers |
-| `../../general/dependencies.md` | `[dependencies]` | Manifest and optional-dependency placement, exact-pin rationale |
-| — (pack-owned) | `[style]` | Naming, imports, line length, indentation, comments, type annotations, main guard |
+| General rule file                | Tags instantiated                                                                   | Python pack adds                                                                                                     |
+| -------------------------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `../../general/scanning.md`      | `[security]`, `[bug]`, `[performance]`, `[resources]`, `[testing]`, `[conciseness]` | Concrete unsafe APIs, mutable defaults, exception breadth, context managers, membership structures, test determinism |
+| `../../general/documentation.md` | `[documentation]`                                                                   | Google-style docstring sections, default/enum/`Raises` alignment, runnable examples                                  |
+| `../../general/concurrency.md`   | `[concurrency]`                                                                     | Executor lifetime, synchronization primitives                                                                        |
+| `../../general/io.md`            | `[io]`                                                                              | Path composition, temporary-file handling, stream versus local-path consumers                                        |
+| `../../general/dependencies.md`  | `[dependencies]`                                                                    | Manifest and optional-dependency placement, exact-pin rationale                                                      |
+| — (pack-owned)                   | `[style]`                                                                           | Naming, imports, line length, indentation, comments, type annotations, main guard                                    |
 
 Severity, conclusions, feedback tone, and the report format are **not**
 redefined here; they stay in `../../general/severity-and-feedback.md` and
@@ -60,34 +60,34 @@ sed -n '2112,2200p' "$GUIDE"               # read one located section
 Frequently used anchors (line numbers are from the vendored copy and shift only
 if the guide is re-vendored — always relocate with `rg` first):
 
-| Topic | Section heading |
-| --- | --- |
-| Lint | `### 2.1 Lint` |
-| Imports | `### 2.2 Imports`, `### 3.13 Imports formatting` |
-| Packages | `### 2.3 Packages` |
-| Exceptions | `### 2.4 Exceptions` |
-| Global state | `### 2.5 Mutable Global State` |
+| Topic                       | Section heading                                                        |
+| --------------------------- | ---------------------------------------------------------------------- |
+| Lint                        | `### 2.1 Lint`                                                         |
+| Imports                     | `### 2.2 Imports`, `### 3.13 Imports formatting`                       |
+| Packages                    | `### 2.3 Packages`                                                     |
+| Exceptions                  | `### 2.4 Exceptions`                                                   |
+| Global state                | `### 2.5 Mutable Global State`                                         |
 | Comprehensions / generators | `### 2.7 Comprehensions & Generator Expressions`, `### 2.9 Generators` |
-| Lambdas / conditionals | `### 2.11 Conditional Expressions`, `### 2.10 Lambda Functions` |
-| Default arguments | `### 2.12 Default Argument Values` |
-| Truthiness | `### 2.14 True/False Evaluations` |
-| Lexical scoping | `### 2.16 Lexical Scoping` |
-| Decorators | `### 2.17 Function and Method Decorators` |
-| Threading | `### 2.18 Threading` |
-| Future imports | `### 2.20 Modern Python: from \_\_future\_\_ imports` |
-| Type annotations | `### 2.21 Type Annotated Code`, `### 3.19 Type Annotations` |
-| Line length | `### 3.2 Line length` |
-| Parentheses / indentation | `### 3.3 Parentheses`, `### 3.4 Indentation` |
-| Whitespace / blank lines | `### 3.5 Blank Lines`, `### 3.6 Whitespace` |
-| Comments and docstrings | `### 3.8 Comments and Docstrings` |
-| Strings | `### 3.10 Strings` |
-| Stateful resources | `### 3.11 Files, Sockets, and similar Stateful Resources` |
-| TODO comments | `### 3.12 TODO Comments` |
-| Statements | `### 3.14 Statements` |
-| Getters / setters | `### 3.15 Getters and Setters` |
-| Naming | `### 3.16 Naming` |
-| Main guard | `### 3.17 Main` |
-| Function length | `### 3.18 Function length` |
+| Lambdas / conditionals      | `### 2.11 Conditional Expressions`, `### 2.10 Lambda Functions`        |
+| Default arguments           | `### 2.12 Default Argument Values`                                     |
+| Truthiness                  | `### 2.14 True/False Evaluations`                                      |
+| Lexical scoping             | `### 2.16 Lexical Scoping`                                             |
+| Decorators                  | `### 2.17 Function and Method Decorators`                              |
+| Threading                   | `### 2.18 Threading`                                                   |
+| Future imports              | `### 2.20 Modern Python: from \_\_future\_\_ imports`                  |
+| Type annotations            | `### 2.21 Type Annotated Code`, `### 3.19 Type Annotations`            |
+| Line length                 | `### 3.2 Line length`                                                  |
+| Parentheses / indentation   | `### 3.3 Parentheses`, `### 3.4 Indentation`                           |
+| Whitespace / blank lines    | `### 3.5 Blank Lines`, `### 3.6 Whitespace`                            |
+| Comments and docstrings     | `### 3.8 Comments and Docstrings`                                      |
+| Strings                     | `### 3.10 Strings`                                                     |
+| Stateful resources          | `### 3.11 Files, Sockets, and similar Stateful Resources`              |
+| TODO comments               | `### 3.12 TODO Comments`                                               |
+| Statements                  | `### 3.14 Statements`                                                  |
+| Getters / setters           | `### 3.15 Getters and Setters`                                         |
+| Naming                      | `### 3.16 Naming`                                                      |
+| Main guard                  | `### 3.17 Main`                                                        |
+| Function length             | `### 3.18 Function length`                                             |
 
 ## Usage
 

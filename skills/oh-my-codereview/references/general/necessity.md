@@ -50,12 +50,12 @@ widening test matrix. When cost clearly exceeds benefit, delegate externally.
 
 ## 4. Verdict levels
 
-| Verdict | Meaning | Follow-up |
-| --- | --- | --- |
-| Implement | Correct responsibility, real demand, no duplication | Proceed to detailed review |
-| Delegate upstream | Belongs to an external component's maintainers | Pursue an upstream fix or dependency upgrade; do not implement locally |
-| Reuse | Existing units compose to cover the need | Add no new unit; compose at the call site |
-| Decompose | Internal sub-steps warrant separate atomic units | Re-evaluate after decomposition |
+| Verdict           | Meaning                                             | Follow-up                                                              |
+| ----------------- | --------------------------------------------------- | ---------------------------------------------------------------------- |
+| Implement         | Correct responsibility, real demand, no duplication | Proceed to detailed review                                             |
+| Delegate upstream | Belongs to an external component's maintainers      | Pursue an upstream fix or dependency upgrade; do not implement locally |
+| Reuse             | Existing units compose to cover the need            | Add no new unit; compose at the call site                              |
+| Decompose         | Internal sub-steps warrant separate atomic units    | Re-evaluate after decomposition                                        |
 
 Record the verdict in the report. A verdict other than `Implement` must appear
 in the conclusion area (Comment or Request Changes) — never bury a "should not

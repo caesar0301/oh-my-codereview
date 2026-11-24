@@ -29,12 +29,12 @@ A single, reproducible four-step workflow (the step index in `SKILL.md` is the s
 Prepare → Context → Review → Report
 ```
 
-| Step        | What happens                                                                                              |
-| ----------- | --------------------------------------------------------------------------------------------------------- |
+| Step        | What happens                                                                                                                      |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | **Prepare** | Pin the revision to an immutable SHA, collect the requirement source, run the diff script, apply `.omcr` filters → `changes.json` |
-| **Context** | Map changed modules and data flow, assign a language to every changed file                                |
+| **Context** | Map changed modules and data flow, assign a language to every changed file                                                        |
 | **Review**  | Load general rules (always-load + conditional) and applicable language packs → findings with severity, category tag, and evidence |
-| **Report**  | Compose the single report, build the graded todo list, choose a conclusion, validate mechanically          |
+| **Report**  | Compose the single report, build the graded todo list, choose a conclusion, validate mechanically                                 |
 
 Every run produces exactly one deliverable: `.omcr/{review-id}/code-review.md`. All artifacts for one review live in that single output directory.
 
@@ -42,16 +42,16 @@ Every run produces exactly one deliverable: `.omcr/{review-id}/code-review.md`. 
 
 Select a mode from a single phrase in the request; when none matches, `full` is used without asking.
 
-| Mode            | Trigger example                              | Scope                                   |
-| --------------- | -------------------------------------------- | --------------------------------------- |
-| `full` (default)| "review this MR", "code review"              | All applicable categories               |
-| `necessity`     | "should this change be made?"                | Necessity only                          |
-| `security`      | "only check security"                        | Security only                           |
-| `documentation` | "only review doc consistency"                | Documentation only                      |
-| `concurrency`   | "only check concurrency"                     | Concurrency only                        |
-| `dependencies`  | "only check licenses and dependencies"       | Dependencies only                       |
-| `io`            | "only check path and IO safety"              | IO only                                 |
-| `style`         | "only check style"                           | Style only, via the applicable language pack |
+| Mode             | Trigger example                        | Scope                                        |
+| ---------------- | -------------------------------------- | -------------------------------------------- |
+| `full` (default) | "review this MR", "code review"        | All applicable categories                    |
+| `necessity`      | "should this change be made?"          | Necessity only                               |
+| `security`       | "only check security"                  | Security only                                |
+| `documentation`  | "only review doc consistency"          | Documentation only                           |
+| `concurrency`    | "only check concurrency"               | Concurrency only                             |
+| `dependencies`   | "only check licenses and dependencies" | Dependencies only                            |
+| `io`             | "only check path and IO safety"        | IO only                                      |
+| `style`          | "only check style"                     | Style only, via the applicable language pack |
 
 Every mode produces the same single report. Single-category modes leave non-selected categories out of the findings and mark them "not reviewed".
 
@@ -77,13 +77,13 @@ npx skills add caesar0301/oh-my-codereview
 
 Once the skill is loaded, talk naturally:
 
-| You might say                                            | What runs                                          |
-| -------------------------------------------------------- | -------------------------------------------------- |
-| "Review this MR", "review the changes"                   | Full review of the change set                      |
-| "Review this diff against main"                          | Full review of `--range main...HEAD`               |
-| "Only check security"                                    | Single-category `security` review                  |
-| "Is this change necessary?"                              | `necessity` review                                 |
-| "Only check style"                                       | `style` review via the applicable language pack    |
+| You might say                          | What runs                                       |
+| -------------------------------------- | ----------------------------------------------- |
+| "Review this MR", "review the changes" | Full review of the change set                   |
+| "Review this diff against main"        | Full review of `--range main...HEAD`            |
+| "Only check security"                  | Single-category `security` review               |
+| "Is this change necessary?"            | `necessity` review                              |
+| "Only check style"                     | `style` review via the applicable language pack |
 
 ## What you get
 

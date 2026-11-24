@@ -46,10 +46,10 @@ lower-precedence rule over a higher-precedence one.
 
 ## Required files in a pack
 
-| File | Purpose |
-| --- | --- |
-| `README.md` | Pack index: file extensions and detection, the general categories instantiated here, the normative style authority and where it lives, default tooling described generically, and targeted-read patterns for any large reference |
-| `review-checklist.md` | Concrete language-specific checks, each mapped to a general category tag and, where applicable, a section of the style authority |
+| File                  | Purpose                                                                                                                                                                                                                          |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `README.md`           | Pack index: file extensions and detection, the general categories instantiated here, the normative style authority and where it lives, default tooling described generically, and targeted-read patterns for any large reference |
+| `review-checklist.md` | Concrete language-specific checks, each mapped to a general category tag and, where applicable, a section of the style authority                                                                                                 |
 
 Optional files: a verbatim vendored style guide, additional topic-specific
 checklists, or examples. Large references must ship with grep patterns so a

@@ -40,11 +40,11 @@ independent: adding a language must never require editing a general rule.
 Use these placeholders consistently; never write machine-specific absolute
 paths, and never refer to files outside the reviewed repository.
 
-| Placeholder | Meaning |
-| --- | --- |
-| `{CODE_HOME}` | Root of the repository under review (the VCS working-copy root). Locate it at the start; if it cannot be located, stop and ask instead of guessing. |
-| `{SKILL_HOME}` | This skill's own directory, containing `SKILL.md`, `references/`, and `scripts/`. |
-| `{REVIEW_DIR}` | `{CODE_HOME}/.omcr/{review-id}/` — the single output directory for this review. All artifacts of one review live here. |
+| Placeholder    | Meaning                                                                                                                                             |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `{CODE_HOME}`  | Root of the repository under review (the VCS working-copy root). Locate it at the start; if it cannot be located, stop and ask instead of guessing. |
+| `{SKILL_HOME}` | This skill's own directory, containing `SKILL.md`, `references/`, and `scripts/`.                                                                   |
+| `{REVIEW_DIR}` | `{CODE_HOME}/.omcr/{review-id}/` — the single output directory for this review. All artifacts of one review live here.                              |
 
 Derive `review-id` from the pinned immutable revision (see step 1), optionally
 prefixed by an MR/PR number supplied by the user. Run every script with the
@@ -56,16 +56,16 @@ virtual environment, package manager, or fixed path.
 Select the mode from a single phrase in the request. When no mode is stated or
 the phrase matches nothing, use `full` without asking.
 
-| Mode | Trigger examples | Scope | Deliverable |
-| --- | --- | --- | --- |
-| `full` (default) | "review this MR", "code review", "review the changes" | All applicable categories | `{REVIEW_DIR}/code-review.md` |
-| `necessity` | "should this change be made?", "is this necessary?" | Necessity only | `{REVIEW_DIR}/code-review.md` |
-| `security` | "only check security" | Security only | `{REVIEW_DIR}/code-review.md` |
-| `documentation` | "only review doc consistency" | Documentation only | `{REVIEW_DIR}/code-review.md` |
-| `concurrency` | "only check concurrency" | Concurrency only | `{REVIEW_DIR}/code-review.md` |
-| `dependencies` | "only check licenses and dependencies" | Dependencies only | `{REVIEW_DIR}/code-review.md` |
-| `io` | "only check path and IO safety" | IO only | `{REVIEW_DIR}/code-review.md` |
-| `style` | "only check style" | Style only, via the applicable language pack | `{REVIEW_DIR}/code-review.md` |
+| Mode             | Trigger examples                                      | Scope                                        | Deliverable                   |
+| ---------------- | ----------------------------------------------------- | -------------------------------------------- | ----------------------------- |
+| `full` (default) | "review this MR", "code review", "review the changes" | All applicable categories                    | `{REVIEW_DIR}/code-review.md` |
+| `necessity`      | "should this change be made?", "is this necessary?"   | Necessity only                               | `{REVIEW_DIR}/code-review.md` |
+| `security`       | "only check security"                                 | Security only                                | `{REVIEW_DIR}/code-review.md` |
+| `documentation`  | "only review doc consistency"                         | Documentation only                           | `{REVIEW_DIR}/code-review.md` |
+| `concurrency`    | "only check concurrency"                              | Concurrency only                             | `{REVIEW_DIR}/code-review.md` |
+| `dependencies`   | "only check licenses and dependencies"                | Dependencies only                            | `{REVIEW_DIR}/code-review.md` |
+| `io`             | "only check path and IO safety"                       | IO only                                      | `{REVIEW_DIR}/code-review.md` |
+| `style`          | "only check style"                                    | Style only, via the applicable language pack | `{REVIEW_DIR}/code-review.md` |
 
 Rules:
 
@@ -89,12 +89,12 @@ flowchart LR
     S3 --> S4["4. Report<br/>compose · validate · deliver"]
 ```
 
-| # | Step | Action | Input → Output | Gate (stop and fill gaps if unmet) |
-| --- | --- | --- | --- | --- |
-| 1 | Prepare | Pin the reviewed revision to an immutable SHA; collect the requirement source; read the reviewed repository's own rules; run the diff script; apply `.omcr` filters | given scope → `{REVIEW_DIR}/changes.json` + `review-id` | Revision pinned to a SHA; `changes.json` on disk |
-| 2 | Context | Map changed modules, their place in the overall flow, and data flow across process/thread boundaries; assign a language to every changed file | `changes.json` → scope notes for the report | Every changed file has a language and belongs to the module map |
-| 3 | Review | Load general rules (always-load plus conditional ones) and the applicable language packs; produce findings with severity, category tag, and evidence | rule files + scope notes → findings | Every Critical/Major finding carries the evidence triple and a category tag |
-| 4 | Report | Compose the single report, build the graded todo list, choose a conclusion, and validate mechanically | findings → `{REVIEW_DIR}/code-review.md` | `validate_report.py` exits 0; finding counts match the report body |
+| #   | Step    | Action                                                                                                                                                              | Input → Output                                          | Gate (stop and fill gaps if unmet)                                          |
+| --- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | --------------------------------------------------------------------------- |
+| 1   | Prepare | Pin the reviewed revision to an immutable SHA; collect the requirement source; read the reviewed repository's own rules; run the diff script; apply `.omcr` filters | given scope → `{REVIEW_DIR}/changes.json` + `review-id` | Revision pinned to a SHA; `changes.json` on disk                            |
+| 2   | Context | Map changed modules, their place in the overall flow, and data flow across process/thread boundaries; assign a language to every changed file                       | `changes.json` → scope notes for the report             | Every changed file has a language and belongs to the module map             |
+| 3   | Review  | Load general rules (always-load plus conditional ones) and the applicable language packs; produce findings with severity, category tag, and evidence                | rule files + scope notes → findings                     | Every Critical/Major finding carries the evidence triple and a category tag |
+| 4   | Report  | Compose the single report, build the graded todo list, choose a conclusion, and validate mechanically                                                               | findings → `{REVIEW_DIR}/code-review.md`                | `validate_report.py` exits 0; finding counts match the report body          |
 
 Hard constraints:
 
@@ -109,20 +109,20 @@ Hard constraints:
 The category index is the single source of tags. Use these exact tags in
 findings and in the todo list.
 
-| Tag | Check | Rule file (prefix `{SKILL_HOME}/references/`) |
-| --- | --- | --- |
-| `[necessity]` | Responsibility boundary, real demand, benefit vs cost, reuse and composition | `general/necessity.md` |
-| `[security]` | Untrusted input, injection, unsafe deserialization, secrets | `general/scanning.md` |
-| `[bug]` | Null/empty paths, boundary conditions, state, silent failure | `general/scanning.md` |
-| `[performance]` | Repeated work, unbounded growth, blocking hot paths | `general/scanning.md` |
-| `[resources]` | Leaked handles, missing cleanup, temporary artifacts | `general/scanning.md` |
-| `[testing]` | Coverage of happy/boundary/error paths, determinism | `general/scanning.md` |
-| `[conciseness]` | Quantifiable logic duplication only | `general/scanning.md` |
-| `[documentation]` | Document-to-code contract consistency | `general/documentation.md` |
-| `[concurrency]` | Data races, locking, pool lifetime, thread affinity | `general/concurrency.md` |
-| `[dependencies]` | License, version pinning, supply chain, attribution | `general/dependencies.md` |
-| `[io]` | Path safety, credential propagation, consumer compatibility | `general/io.md` |
-| `[style]` | Language-specific style and idiom | `languages/{lang}/review-checklist.md` |
+| Tag               | Check                                                                        | Rule file (prefix `{SKILL_HOME}/references/`) |
+| ----------------- | ---------------------------------------------------------------------------- | --------------------------------------------- |
+| `[necessity]`     | Responsibility boundary, real demand, benefit vs cost, reuse and composition | `general/necessity.md`                        |
+| `[security]`      | Untrusted input, injection, unsafe deserialization, secrets                  | `general/scanning.md`                         |
+| `[bug]`           | Null/empty paths, boundary conditions, state, silent failure                 | `general/scanning.md`                         |
+| `[performance]`   | Repeated work, unbounded growth, blocking hot paths                          | `general/scanning.md`                         |
+| `[resources]`     | Leaked handles, missing cleanup, temporary artifacts                         | `general/scanning.md`                         |
+| `[testing]`       | Coverage of happy/boundary/error paths, determinism                          | `general/scanning.md`                         |
+| `[conciseness]`   | Quantifiable logic duplication only                                          | `general/scanning.md`                         |
+| `[documentation]` | Document-to-code contract consistency                                        | `general/documentation.md`                    |
+| `[concurrency]`   | Data races, locking, pool lifetime, thread affinity                          | `general/concurrency.md`                      |
+| `[dependencies]`  | License, version pinning, supply chain, attribution                          | `general/dependencies.md`                     |
+| `[io]`            | Path safety, credential propagation, consumer compatibility                  | `general/io.md`                               |
+| `[style]`         | Language-specific style and idiom                                            | `languages/{lang}/review-checklist.md`        |
 
 Loading strategy:
 
@@ -161,13 +161,13 @@ file map below may optionally be updated).
 
 ## Severity
 
-| Level | Meaning |
-| --- | --- |
+| Level    | Meaning                                                                          |
+| -------- | -------------------------------------------------------------------------------- |
 | Critical | Must fix: functional defect, security flaw, data race, wrong documented contract |
-| Major | Should fix: performance, quality, maintainability |
-| Minor | Optional: style, best practice |
-| Learning | Educational note, no action required |
-| Praise | Something done well; report good work as well as problems |
+| Major    | Should fix: performance, quality, maintainability                                |
+| Minor    | Optional: style, best practice                                                   |
+| Learning | Educational note, no action required                                             |
+| Praise   | Something done well; report good work as well as problems                        |
 
 Conclusions: `Approve` / `Comment` (minor suggestions) / `Request Changes`
 (must be addressed). Full definitions, the feedback tone, common traps, and
@@ -209,10 +209,10 @@ headings (the authoritative skeleton, encoded as `REQUIRED_SECTIONS` in
 
 ## Scripts
 
-| Script | Purpose | Command |
-| --- | --- | --- |
+| Script                | Purpose                                                                                                            | Command                                                                                                                         |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
 | `analyze_git_diff.py` | Git/SVN diff analysis into `changes.json`; includes config/manifest files so dependency and CI changes are visible | `--range <range> [--vcs git\|svn\|auto] [--files ...] [--output file.json] [--format json\|markdown] [--verbose] [--no-config]` |
-| `validate_report.py` | Mechanical report check: section skeleton, leftover placeholders, existing sibling references | `<report.md> [--review-dir <dir>] [--json]` |
+| `validate_report.py`  | Mechanical report check: section skeleton, leftover placeholders, existing sibling references                      | `<report.md> [--review-dir <dir>] [--json]`                                                                                     |
 
 Both are standard-library-only and expose `--help`. `validate_report.py` uses
 `0` pass / `1` finding / `2` usage or input error; `analyze_git_diff.py` uses
@@ -221,12 +221,12 @@ Consult each script's `--help` for details.
 
 ## Knowledge ownership
 
-| Asset | Owner | Location |
-| --- | --- | --- |
-| General review methods, evidence rules, output format | Ships with this skill | `{SKILL_HOME}/` |
-| Language-specific style and idiom | Ships with this skill, per pack | `{SKILL_HOME}/references/languages/` |
-| Project rules, architecture constraints, interface contracts | The reviewed repository | Read from `{CODE_HOME}` at review time; these override bundled defaults on conflict |
-| Historical defect context | The reviewed repository | Consulted from `{CODE_HOME}` at review time when available |
+| Asset                                                        | Owner                           | Location                                                                            |
+| ------------------------------------------------------------ | ------------------------------- | ----------------------------------------------------------------------------------- |
+| General review methods, evidence rules, output format        | Ships with this skill           | `{SKILL_HOME}/`                                                                     |
+| Language-specific style and idiom                            | Ships with this skill, per pack | `{SKILL_HOME}/references/languages/`                                                |
+| Project rules, architecture constraints, interface contracts | The reviewed repository         | Read from `{CODE_HOME}` at review time; these override bundled defaults on conflict |
+| Historical defect context                                    | The reviewed repository         | Consulted from `{CODE_HOME}` at review time when available                          |
 
 The reviewing agent supplies code search, file reading, and reasoning. This
 skill supplies only process and assets; it assumes no particular agent or

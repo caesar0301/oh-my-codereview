@@ -27,8 +27,10 @@ See README.md for details.
 # Google Python Style Guide
 
 <!-- mdformat off -->
-* TOC
-{:toc}
+
+- TOC
+  {:toc}
+
 <!-- mdformat on -->
 
 <a id="s1-background"></a>
@@ -39,7 +41,7 @@ See README.md for details.
 ## 1 Background
 
 Python is the main dynamic language used at Google. This style guide is a list
-of *dos and don'ts* for Python programs.
+of _dos and don'ts_ for Python programs.
 
 To help you format code correctly, we've created a
 [settings file for Vim](google_python_style.vim). For Emacs, the default
@@ -203,19 +205,19 @@ Module names can still collide. Some module names are inconveniently long.
 
 #### 2.2.4 Decision
 
-*   Use `import x` for importing packages and modules.
-*   Use `from x import y` where `x` is the package prefix and `y` is the module
-    name with no prefix.
-*   Use `from x import y as z` in any of the following circumstances:
-    -   Two modules named `y` are to be imported.
-    -   `y` conflicts with a top-level name defined in the current module.
-    -   `y` conflicts with a common parameter name that is part of the public
-        API (e.g., `features`).
-    -   `y` is an inconveniently long name.
-    -   `y` is too generic in the context of your code (e.g.,
-        `from storage.file_system import options as fs_options`).
-*   Use `import y as z` only when `z` is a standard abbreviation (e.g.,
-    `import numpy as np`).
+- Use `import x` for importing packages and modules.
+- Use `from x import y` where `x` is the package prefix and `y` is the module
+  name with no prefix.
+- Use `from x import y as z` in any of the following circumstances:
+  - Two modules named `y` are to be imported.
+  - `y` conflicts with a top-level name defined in the current module.
+  - `y` conflicts with a common parameter name that is part of the public
+    API (e.g., `features`).
+  - `y` is an inconveniently long name.
+  - `y` is too generic in the context of your code (e.g.,
+    `from storage.file_system import options as fs_options`).
+- Use `import y as z` only when `z` is a standard abbreviation (e.g.,
+  `import numpy as np`).
 
 For example the module `sound.effects.echo` may be imported as follows:
 
@@ -238,9 +240,9 @@ package twice.
 Symbols from the following modules, used to support static analysis and type
 checking, are exempt from this rule:
 
-*   [`typing` module](#typing-imports)
-*   [`collections.abc` module](#typing-imports)
-*   [`typing_extensions` module](https://github.com/python/typing_extensions/blob/main/README.md)
+- [`typing` module](#typing-imports)
+- [`collections.abc` module](#typing-imports)
+- [`typing_extensions` module](https://github.com/python/typing_extensions/blob/main/README.md)
 
 <a id="s2.3-packages"></a>
 <a id="23-packages"></a>
@@ -304,7 +306,7 @@ Yes:
   _FOO = flags.DEFINE_string(...)
 ```
 
-*(assume this file lives in `doctor/who/` where `jodie.py` also exists)*
+_(assume this file lives in `doctor/who/` where `jodie.py` also exists)_
 
 <div class='badcode'></div>
 
@@ -371,95 +373,95 @@ library calls.
 
 Exceptions must follow certain conditions:
 
--   Make use of built-in exception classes when it makes sense. For example,
-    raise a `ValueError` to indicate a programming mistake like a violated
-    precondition, such as may happen when validating function arguments.
+- Make use of built-in exception classes when it makes sense. For example,
+  raise a `ValueError` to indicate a programming mistake like a violated
+  precondition, such as may happen when validating function arguments.
 
--   Do not use `assert` statements in place of conditionals or validating
-    preconditions. They must not be critical to the application logic. A litmus
-    test would be that the `assert` could be removed without breaking the code.
-    `assert` conditionals are
-    [not guaranteed](https://docs.python.org/3/reference/simple_stmts.html#the-assert-statement)
-    to be evaluated. For [pytest](https://pytest.org) based tests, `assert` is
-    okay and expected to verify expectations. For example:
+- Do not use `assert` statements in place of conditionals or validating
+  preconditions. They must not be critical to the application logic. A litmus
+  test would be that the `assert` could be removed without breaking the code.
+  `assert` conditionals are
+  [not guaranteed](https://docs.python.org/3/reference/simple_stmts.html#the-assert-statement)
+  to be evaluated. For [pytest](https://pytest.org) based tests, `assert` is
+  okay and expected to verify expectations. For example:
 
-    <div class='goodcode'></div>
+  <div class='goodcode'></div>
 
-    ```python
-    Yes:
-      def connect_to_next_port(self, minimum: int) -> int:
-        """Connects to the next available port.
+  ```python
+  Yes:
+    def connect_to_next_port(self, minimum: int) -> int:
+      """Connects to the next available port.
 
-        Args:
-          minimum: A port value greater or equal to 1024.
+      Args:
+        minimum: A port value greater or equal to 1024.
 
-        Returns:
-          The new minimum port.
+      Returns:
+        The new minimum port.
 
-        Raises:
-          ConnectionError: If no available port is found.
-        """
-        if minimum < 1024:
-          # Note that this raising of ValueError is not mentioned in the doc
-          # string's "Raises:" section because it is not appropriate to
-          # guarantee this specific behavioral reaction to API misuse.
-          raise ValueError(f'Min. port must be at least 1024, not {minimum}.')
-        port = self._find_next_open_port(minimum)
-        if port is None:
-          raise ConnectionError(
-              f'Could not connect to service on port {minimum} or higher.')
-        # The code does not depend on the result of this assert.
-        assert port >= minimum, (
-            f'Unexpected port {port} when minimum was {minimum}.')
-        return port
-    ```
+      Raises:
+        ConnectionError: If no available port is found.
+      """
+      if minimum < 1024:
+        # Note that this raising of ValueError is not mentioned in the doc
+        # string's "Raises:" section because it is not appropriate to
+        # guarantee this specific behavioral reaction to API misuse.
+        raise ValueError(f'Min. port must be at least 1024, not {minimum}.')
+      port = self._find_next_open_port(minimum)
+      if port is None:
+        raise ConnectionError(
+            f'Could not connect to service on port {minimum} or higher.')
+      # The code does not depend on the result of this assert.
+      assert port >= minimum, (
+          f'Unexpected port {port} when minimum was {minimum}.')
+      return port
+  ```
 
-    <div class='badcode'></div>
+  <div class='badcode'></div>
 
-    ```python
-    No:
-      def connect_to_next_port(self, minimum: int) -> int:
-        """Connects to the next available port.
+  ```python
+  No:
+    def connect_to_next_port(self, minimum: int) -> int:
+      """Connects to the next available port.
 
-        Args:
-          minimum: A port value greater or equal to 1024.
+      Args:
+        minimum: A port value greater or equal to 1024.
 
-        Returns:
-          The new minimum port.
-        """
-        assert minimum >= 1024, 'Minimum port must be at least 1024.'
-        # The following code depends on the previous assert.
-        port = self._find_next_open_port(minimum)
-        assert port is not None
-        # The type checking of the return statement relies on the assert.
-        return port
-    ```
+      Returns:
+        The new minimum port.
+      """
+      assert minimum >= 1024, 'Minimum port must be at least 1024.'
+      # The following code depends on the previous assert.
+      port = self._find_next_open_port(minimum)
+      assert port is not None
+      # The type checking of the return statement relies on the assert.
+      return port
+  ```
 
--   Libraries or packages may define their own exceptions. When doing so they
-    must inherit from an existing exception class. Exception names should end in
-    `Error` and should not introduce repetition (`foo.FooError`).
+- Libraries or packages may define their own exceptions. When doing so they
+  must inherit from an existing exception class. Exception names should end in
+  `Error` and should not introduce repetition (`foo.FooError`).
 
--   Never use catch-all `except:` statements, or catch `Exception` or
-    `StandardError`, unless you are
+- Never use catch-all `except:` statements, or catch `Exception` or
+  `StandardError`, unless you are
 
-    -   re-raising the exception, or
-    -   creating an isolation point in the program where exceptions are not
-        propagated but are recorded and suppressed instead, such as protecting a
-        thread from crashing by guarding its outermost block.
+  - re-raising the exception, or
+  - creating an isolation point in the program where exceptions are not
+    propagated but are recorded and suppressed instead, such as protecting a
+    thread from crashing by guarding its outermost block.
 
-    Python is very tolerant in this regard and `except:` will really catch
-    everything including misspelled names, sys.exit() calls, Ctrl+C interrupts,
-    unittest failures and all kinds of other exceptions that you simply don't
-    want to catch.
+  Python is very tolerant in this regard and `except:` will really catch
+  everything including misspelled names, sys.exit() calls, Ctrl+C interrupts,
+  unittest failures and all kinds of other exceptions that you simply don't
+  want to catch.
 
--   Minimize the amount of code in a `try`/`except` block. The larger the body
-    of the `try`, the more likely that an exception will be raised by a line of
-    code that you didn't expect to raise an exception. In those cases, the
-    `try`/`except` block hides a real error.
+- Minimize the amount of code in a `try`/`except` block. The larger the body
+  of the `try`, the more likely that an exception will be raised by a line of
+  code that you didn't expect to raise an exception. In those cases, the
+  `try`/`except` block hides a real error.
 
--   Use the `finally` clause to execute code whether or not an exception is
-    raised in the `try` block. This is often useful for cleanup, i.e., closing a
-    file.
+- Use the `finally` clause to execute code whether or not an exception is
+  raised in the `try` block. This is often useful for cleanup, i.e., closing a
+  file.
 
 <a id="s2.5-global-variables"></a>
 <a id="25-global-variables"></a>
@@ -498,14 +500,14 @@ Occasionally useful.
 
 #### 2.5.3 Cons
 
-*   Breaks encapsulation: Such design can make it hard to achieve valid
-    objectives. For example, if global state is used to manage a database
-    connection, then connecting to two different databases at the same time
-    (such as for computing differences during a migration) becomes difficult.
-    Similar problems easily arise with global registries.
+- Breaks encapsulation: Such design can make it hard to achieve valid
+  objectives. For example, if global state is used to manage a database
+  connection, then connecting to two different databases at the same time
+  (such as for computing differences during a migration) becomes difficult.
+  Similar problems easily arise with global registries.
 
-*   Has the potential to change module behavior during the import, because
-    assignments to global variables are done when the module is first imported.
+- Has the potential to change module behavior during the import, because
+  assignments to global variables are done when the module is first imported.
 
 <a id="s2.5.4-decision"></a>
 <a id="254-decision"></a>
@@ -1057,12 +1059,12 @@ attribute access.
 
 #### 2.13.2 Pros
 
-*   Allows for an attribute access and assignment API rather than
-    [getter and setter](#getters-and-setters) method calls.
-*   Can be used to make an attribute read-only.
-*   Allows calculations to be lazy.
-*   Provides a way to maintain the public interface of a class when the
-    internals evolve independently of class users.
+- Allows for an attribute access and assignment API rather than
+  [getter and setter](#getters-and-setters) method calls.
+- Can be used to make an attribute read-only.
+- Allows calculations to be lazy.
+- Provides a way to maintain the public interface of a class when the
+  internals evolve independently of class users.
 
 <a id="s2.13.3-cons"></a>
 <a id="2133-cons"></a>
@@ -1071,8 +1073,8 @@ attribute access.
 
 #### 2.13.3 Cons
 
-*   Can hide side-effects much like operator overloading.
-*   Can be confusing for subclasses.
+- Can hide side-effects much like operator overloading.
+- Can be confusing for subclasses.
 
 <a id="s2.13.4-decision"></a>
 <a id="2134-decision"></a>
@@ -1088,7 +1090,7 @@ necessary and match the expectations of typical attribute access; follow the
 For example, using a property to simply both get and set an internal attribute
 isn't allowed: there is no computation occurring, so the property is unnecessary
 ([make the attribute public instead](#getters-and-setters)). In comparison,
-using a property to control attribute access or to calculate a *trivially*
+using a property to control attribute access or to calculate a _trivially_
 derived value is allowed: the logic is simple and unsurprising.
 
 Properties should be created with the `@property`
@@ -1147,56 +1149,56 @@ May look strange to C/C++ developers.
 Use the "implicit" false if possible, e.g., `if foo:` rather than
 `if foo != []:`. There are a few caveats that you should keep in mind though:
 
--   Always use `if foo is None:` (or `is not None`) to check for a `None` value.
-    E.g., when testing whether a variable or argument that defaults to `None`
-    was set to some other value. The other value might be a value that's false
-    in a boolean context!
+- Always use `if foo is None:` (or `is not None`) to check for a `None` value.
+  E.g., when testing whether a variable or argument that defaults to `None`
+  was set to some other value. The other value might be a value that's false
+  in a boolean context!
 
--   Never compare a boolean variable to `False` using `==`. Use `if not x:`
-    instead. If you need to distinguish `False` from `None` then chain the
-    expressions, such as `if not x and x is not None:`.
+- Never compare a boolean variable to `False` using `==`. Use `if not x:`
+  instead. If you need to distinguish `False` from `None` then chain the
+  expressions, such as `if not x and x is not None:`.
 
--   For sequences (strings, lists, tuples), use the fact that empty sequences
-    are false, so `if seq:` and `if not seq:` are preferable to `if len(seq):`
-    and `if not len(seq):` respectively.
+- For sequences (strings, lists, tuples), use the fact that empty sequences
+  are false, so `if seq:` and `if not seq:` are preferable to `if len(seq):`
+  and `if not len(seq):` respectively.
 
--   When handling integers, implicit false may involve more risk than benefit
-    (i.e., accidentally handling `None` as 0). You may compare a value which is
-    known to be an integer (and is not the result of `len()`) against the
-    integer 0.
+- When handling integers, implicit false may involve more risk than benefit
+  (i.e., accidentally handling `None` as 0). You may compare a value which is
+  known to be an integer (and is not the result of `len()`) against the
+  integer 0.
 
-    <div class='goodcode'></div>
+  <div class='goodcode'></div>
 
-    ```python
-    Yes: if not users:
-             print('no users')
+  ```python
+  Yes: if not users:
+           print('no users')
 
-         if i % 10 == 0:
-             self.handle_multiple_of_ten()
+       if i % 10 == 0:
+           self.handle_multiple_of_ten()
 
-         def f(x=None):
-             if x is None:
-                 x = []
-    ```
+       def f(x=None):
+           if x is None:
+               x = []
+  ```
 
-    <div class='badcode'></div>
+  <div class='badcode'></div>
 
-    ```python
-    No:  if len(users) == 0:
-             print('no users')
+  ```python
+  No:  if len(users) == 0:
+           print('no users')
 
-         if not i % 10:
-             self.handle_multiple_of_ten()
+       if not i % 10:
+           self.handle_multiple_of_ten()
 
-         def f(x=None):
-             x = x or []
-    ```
+       def f(x=None):
+           x = x or []
+  ```
 
--   Note that `'0'` (i.e., `0` as string) evaluates to true.
+- Note that `'0'` (i.e., `0` as string) evaluates to true.
 
--   Note that Numpy arrays may raise an exception in an implicit boolean
-    context. Prefer the `.size` attribute when testing emptiness of a `np.array`
-    (e.g. `if not users.size`).
+- Note that Numpy arrays may raise an exception in an implicit boolean
+  context. Prefer the `.size` attribute when testing emptiness of a `np.array`
+  (e.g. `if not users.size`).
 
 <a id="s2.16-lexical-scoping"></a>
 <a id="216-lexical-scoping"></a>
@@ -1633,15 +1635,15 @@ two statements on the same line.
 
 ### 3.2 Line length
 
-Maximum line length is *80 characters*.
+Maximum line length is _80 characters_.
 
 Explicit exceptions to the 80 character limit:
 
--   Long import statements.
--   URLs, pathnames, or long flags in comments.
--   Long string module-level constants not containing whitespace that would be
-    inconvenient to split across lines such as URLs or pathnames.
--   Pylint disable comments. (e.g.: `# pylint: disable=invalid-name`)
+- Long import statements.
+- URLs, pathnames, or long flags in comments.
+- Long string module-level constants not containing whitespace that would be
+  inconvenient to split across lines such as URLs or pathnames.
+- Pylint disable comments. (e.g.: `# pylint: disable=invalid-name`)
 
 Do not use a backslash for
 [explicit line continuation](https://docs.python.org/3/reference/lexical_analysis.html#explicit-line-joining).
@@ -1818,7 +1820,7 @@ No:  if (x):
 
 ### 3.4 Indentation
 
-Indent your code blocks with *4 spaces*.
+Indent your code blocks with _4 spaces_.
 
 Never use tabs. Implied line continuation should align wrapped elements
 vertically (see [line length examples](#s3.2-line-length)), or use a hanging
@@ -2041,7 +2043,7 @@ No:  x<1
 
 Never use spaces around `=` when passing keyword arguments or defining a default
 parameter value, with one exception:
-[when a type annotation is present](#typing-default-values), *do* use spaces
+[when a type annotation is present](#typing-default-values), _do_ use spaces
 around the `=` for the default parameter value.
 
 <div class='goodcode'></div>
@@ -2122,7 +2124,7 @@ inline comments.
 
 #### 3.8.1 Docstrings
 
-Python uses *docstrings* to document code. A docstring is a string that is the
+Python uses _docstrings_ to document code. A docstring is a string that is the
 first statement in a package, module, class or function. These strings can be
 extracted automatically through the `__doc__` member of the object and are used
 by `pydoc`. (Try running `pydoc` on your module to see how it looks.) Always use
@@ -2222,9 +2224,9 @@ In this section, "function" means a method, function, generator, or property.
 A docstring is mandatory for every function that has one or more of the
 following properties:
 
--   being part of the public API
--   nontrivial size
--   non-obvious logic
+- being part of the public API
+- nontrivial size
+- non-obvious logic
 
 A docstring should give enough information to write a call to the function
 without reading the function's code. The docstring should describe the
@@ -2251,43 +2253,43 @@ where the function's name and signature are informative enough that it can be
 aptly described using a one-line docstring.
 
 <a id="doc-function-args"></a>
-[*Args:*](#doc-function-args)
-:   List each parameter by name. A description should follow the name, and be
-    separated by a colon followed by either a space or newline. If the
-    description is too long to fit on a single 80-character line, use a hanging
-    indent of 2 or 4 spaces more than the parameter name (be consistent with the
-    rest of the docstrings in the file). The description should include required
-    type(s) if the code does not contain a corresponding type annotation. If a
-    function accepts `*foo` (variable length argument lists) and/or `**bar`
-    (arbitrary keyword arguments), they should be listed as `*foo` and `**bar`.
+[_Args:_](#doc-function-args)
+: List each parameter by name. A description should follow the name, and be
+separated by a colon followed by either a space or newline. If the
+description is too long to fit on a single 80-character line, use a hanging
+indent of 2 or 4 spaces more than the parameter name (be consistent with the
+rest of the docstrings in the file). The description should include required
+type(s) if the code does not contain a corresponding type annotation. If a
+function accepts `*foo` (variable length argument lists) and/or `**bar`
+(arbitrary keyword arguments), they should be listed as `*foo` and `**bar`.
 
 <a id="doc-function-returns"></a>
-[*Returns:* (or *Yields:* for generators)](#doc-function-returns)
-:   Describe the semantics of the return value, including any type information
-    that the type annotation does not provide. If the function only returns
-    None, this section is not required. It may also be omitted if the docstring
-    starts with "Return", "Returns", "Yield", or "Yields" (e.g.
-    `"""Returns row from Bigtable as a tuple of strings."""`) *and* the opening
-    sentence is sufficient to describe the return value. Do not imitate older
-    'NumPy style'
-    ([example](https://numpy.org/doc/1.24/reference/generated/numpy.linalg.qr.html)),
-    which frequently documented a tuple return value as if it were multiple
-    return values with individual names (never mentioning the tuple). Instead,
-    describe such a return value as: "Returns: A tuple (mat_a, mat_b), where
-    mat_a is ..., and ...". The auxiliary names in the docstring need not
-    necessarily correspond to any internal names used in the function body (as
-    those are not part of the API). If the function uses `yield` (is a
-    generator), the `Yields:` section should document the object returned by
-    `next()`, instead of the generator object itself that the call evaluates to.
+[_Returns:_ (or _Yields:_ for generators)](#doc-function-returns)
+: Describe the semantics of the return value, including any type information
+that the type annotation does not provide. If the function only returns
+None, this section is not required. It may also be omitted if the docstring
+starts with "Return", "Returns", "Yield", or "Yields" (e.g.
+`"""Returns row from Bigtable as a tuple of strings."""`) _and_ the opening
+sentence is sufficient to describe the return value. Do not imitate older
+'NumPy style'
+([example](https://numpy.org/doc/1.24/reference/generated/numpy.linalg.qr.html)),
+which frequently documented a tuple return value as if it were multiple
+return values with individual names (never mentioning the tuple). Instead,
+describe such a return value as: "Returns: A tuple (mat_a, mat_b), where
+mat_a is ..., and ...". The auxiliary names in the docstring need not
+necessarily correspond to any internal names used in the function body (as
+those are not part of the API). If the function uses `yield` (is a
+generator), the `Yields:` section should document the object returned by
+`next()`, instead of the generator object itself that the call evaluates to.
 
 <a id="doc-function-raises"></a>
-[*Raises:*](#doc-function-raises)
-:   List all exceptions that are relevant to the interface followed by a
-    description. Use a similar exception name + colon + space or newline and
-    hanging indent style as described in *Args:*. You should not document
-    exceptions that get raised if the API specified in the docstring is violated
-    (because this would paradoxically make behavior under violation of the API
-    part of the API).
+[_Raises:_](#doc-function-raises)
+: List all exceptions that are relevant to the interface followed by a
+description. Use a similar exception name + colon + space or newline and
+hanging indent style as described in _Args:_. You should not document
+exceptions that get raised if the API specified in the docstring is violated
+(because this would paradoxically make behavior under violation of the API
+part of the API).
 
 <div class='goodcode'></div>
 
@@ -2853,26 +2855,26 @@ fashion. To name only a few examples, this also includes
 Leaving files, sockets or other such stateful objects open unnecessarily has
 many downsides:
 
--   They may consume limited system resources, such as file descriptors. Code
-    that deals with many such objects may exhaust those resources unnecessarily
-    if they're not returned to the system promptly after use.
--   Holding files open may prevent other actions such as moving or deleting
-    them, or unmounting a filesystem.
--   Files and sockets that are shared throughout a program may inadvertently be
-    read from or written to after logically being closed. If they are actually
-    closed, attempts to read or write from them will raise exceptions, making
-    the problem known sooner.
+- They may consume limited system resources, such as file descriptors. Code
+  that deals with many such objects may exhaust those resources unnecessarily
+  if they're not returned to the system promptly after use.
+- Holding files open may prevent other actions such as moving or deleting
+  them, or unmounting a filesystem.
+- Files and sockets that are shared throughout a program may inadvertently be
+  read from or written to after logically being closed. If they are actually
+  closed, attempts to read or write from them will raise exceptions, making
+  the problem known sooner.
 
 Furthermore, while files and sockets (and some similarly behaving resources) are
 automatically closed when the object is destructed, coupling the lifetime of the
 object to the state of the resource is poor practice:
 
--   There are no guarantees as to when the runtime will actually invoke the
-    `__del__` method. Different Python implementations use different memory
-    management techniques, such as delayed garbage collection, which may
-    increase the object's lifetime arbitrarily and indefinitely.
--   Unexpected references to the file, e.g. in globals or exception tracebacks,
-    may keep it around longer than intended.
+- There are no guarantees as to when the runtime will actually invoke the
+  `__del__` method. Different Python implementations use different memory
+  management techniques, such as delayed garbage collection, which may
+  increase the object's lifetime arbitrarily and indefinitely.
+- Unexpected references to the file, e.g. in globals or exception tracebacks,
+  may keep it around longer than intended.
 
 Relying on finalizers to do automatic cleanup that has observable side effects
 has been rediscovered over and over again to lead to major problems, across many
@@ -3159,29 +3161,29 @@ Always use a `.py` filename extension. Never use dashes.
 
 #### 3.16.1 Names to Avoid
 
--   single character names, except for specifically allowed cases:
+- single character names, except for specifically allowed cases:
 
-    -   counters or iterators (e.g. `i`, `j`, `k`, `v`, et al.)
-    -   `e` as an exception identifier in `try/except` statements.
-    -   `f` as a file handle in `with` statements
-    -   private [type variables](#typing-type-var) with no constraints (e.g.
-        `_T = TypeVar("_T")`, `_P = ParamSpec("_P")`)
-    -   names that match established notation in a reference paper or algorithm
-        (see [Mathematical Notation](#math-notation))
+  - counters or iterators (e.g. `i`, `j`, `k`, `v`, et al.)
+  - `e` as an exception identifier in `try/except` statements.
+  - `f` as a file handle in `with` statements
+  - private [type variables](#typing-type-var) with no constraints (e.g.
+    `_T = TypeVar("_T")`, `_P = ParamSpec("_P")`)
+  - names that match established notation in a reference paper or algorithm
+    (see [Mathematical Notation](#math-notation))
 
-    Please be mindful not to abuse single-character naming. Generally speaking,
-    descriptiveness should be proportional to the name's scope of visibility.
-    For example, `i` might be a fine name for 5-line code block but within
-    multiple nested scopes, it is likely too vague.
+  Please be mindful not to abuse single-character naming. Generally speaking,
+  descriptiveness should be proportional to the name's scope of visibility.
+  For example, `i` might be a fine name for 5-line code block but within
+  multiple nested scopes, it is likely too vague.
 
--   dashes (`-`) in any package/module name
+- dashes (`-`) in any package/module name
 
--   `__double_leading_and_trailing_underscore__` names (reserved by Python)
+- `__double_leading_and_trailing_underscore__` names (reserved by Python)
 
--   offensive terms
+- offensive terms
 
--   names that needlessly include the type of the variable (for example:
-    `id_to_name_dict`)
+- names that needlessly include the type of the variable (for example:
+  `id_to_name_dict`)
 
 <a id="s3.16.2-naming-conventions"></a>
 <a id="3162-naming-convention"></a>
@@ -3190,39 +3192,39 @@ Always use a `.py` filename extension. Never use dashes.
 
 #### 3.16.2 Naming Conventions
 
--   In general, follow [PEP 8 naming conventions][PEP-8-naming-conventions].
+- In general, follow [PEP 8 naming conventions][PEP-8-naming-conventions].
 
--   "Internal" means internal to a module, or protected or private within a
-    class.
+- "Internal" means internal to a module, or protected or private within a
+  class.
 
--   Prepending a single underscore (`_`) has some support for protecting module
-    variables and functions (linters will flag protected member access). Note
-    that it is okay for unit tests to access protected constants from the
-    modules under test.
+- Prepending a single underscore (`_`) has some support for protecting module
+  variables and functions (linters will flag protected member access). Note
+  that it is okay for unit tests to access protected constants from the
+  modules under test.
 
--   Prepending a double underscore (`__` aka "dunder") to an instance variable
-    or method effectively makes the variable or method private to its class
-    (using name mangling); we discourage its use as it impacts readability and
-    testability, and isn't *really* private. Prefer a single underscore.
+- Prepending a double underscore (`__` aka "dunder") to an instance variable
+  or method effectively makes the variable or method private to its class
+  (using name mangling); we discourage its use as it impacts readability and
+  testability, and isn't _really_ private. Prefer a single underscore.
 
--   Place related classes and top-level functions together in a module. Unlike
-    Java, there is no need to limit yourself to one class per module.
+- Place related classes and top-level functions together in a module. Unlike
+  Java, there is no need to limit yourself to one class per module.
 
--   Use CapWords for class names, but lower\_with\_under.py for module names.
-    Although there are some old modules named CapWords.py, this is now
-    discouraged because it's confusing when the module happens to be named after
-    a class. ("wait -- did I write `import StringIO` or
-    `from StringIO import StringIO`?")
+- Use CapWords for class names, but lower\_with\_under.py for module names.
+  Although there are some old modules named CapWords.py, this is now
+  discouraged because it's confusing when the module happens to be named after
+  a class. ("wait -- did I write `import StringIO` or
+  `from StringIO import StringIO`?")
 
-    -   Note that [PEP 8 says][PEP-8-acronyms]: "When using acronyms in
-        CapWords, capitalize all the letters of the acronym. Thus
-        HTTPServerError is better than HttpServerError."
+  - Note that [PEP 8 says][PEP-8-acronyms]: "When using acronyms in
+    CapWords, capitalize all the letters of the acronym. Thus
+    HTTPServerError is better than HttpServerError."
 
--   New *unit test* files follow PEP 8 compliant lower\_with\_under method
-    names, for example, `test_<method_under_test>_<state>`. For consistency(\*)
-    with legacy modules that follow CapWords function names, underscores may
-    appear in method names starting with `test` to separate logical components
-    of the name. One possible pattern is `test<MethodUnderTest>_<state>`.
+- New _unit test_ files follow PEP 8 compliant lower\_with\_under method
+  names, for example, `test_<method_under_test>_<state>`. For consistency(\*)
+  with legacy modules that follow CapWords function names, underscores may
+  appear in method names starting with `test` to separate logical components
+  of the name. One possible pattern is `test<MethodUnderTest>_<state>`.
 
 [PEP-8-naming-conventions]: https://peps.python.org/pep-0008/#naming-conventions
 [PEP-8-acronyms]: https://peps.python.org/pep-0008/#descriptive-naming-styles
@@ -3233,10 +3235,10 @@ Always use a `.py` filename extension. Never use dashes.
 
 The following exemptions apply to the general naming conventions above:
 
--   When Python code is tightly coupled with an external or non-Python codebase,
-    such as foreign function interfaces (FFIs) to C++, consistency with the
-    other codebase may warrant following a different convention
-    ([Consistency](#consistency)).
+- When Python code is tightly coupled with an external or non-Python codebase,
+  such as foreign function interfaces (FFIs) to C++, consistency with the
+  other codebase may warrant following a different convention
+  ([Consistency](#consistency)).
 
 <a id="s3.16.3-file-naming"></a>
 <a id="3163-file-naming"></a>
@@ -3437,43 +3439,43 @@ function into smaller and more manageable pieces.
 
 #### 3.19.1 General Rules
 
-*   Familiarize yourself with
-    [type hints](https://docs.python.org/3/library/typing.html).
+- Familiarize yourself with
+  [type hints](https://docs.python.org/3/library/typing.html).
 
-*   Annotating `self` or `cls` is generally not necessary.
-    [`Self`](https://docs.python.org/3/library/typing.html#typing.Self) can be
-    used if it is necessary for proper type information, e.g.
+- Annotating `self` or `cls` is generally not necessary.
+  [`Self`](https://docs.python.org/3/library/typing.html#typing.Self) can be
+  used if it is necessary for proper type information, e.g.
 
-    <div class='goodcode'></div>
+  <div class='goodcode'></div>
 
-    ```python
-    from typing import Self
+  ```python
+  from typing import Self
 
-    class BaseClass:
-      @classmethod
-      def create(cls) -> Self:
-        ...
+  class BaseClass:
+    @classmethod
+    def create(cls) -> Self:
+      ...
 
-      def difference(self, other: Self) -> float:
-        ...
-    ```
+    def difference(self, other: Self) -> float:
+      ...
+  ```
 
-*   Similarly, don't feel compelled to annotate the return value of `__init__`
-    (where `None` is the only valid option).
+- Similarly, don't feel compelled to annotate the return value of `__init__`
+  (where `None` is the only valid option).
 
-*   If any other variable or a returned type should not be expressed, use `Any`.
+- If any other variable or a returned type should not be expressed, use `Any`.
 
-*   You are not required to annotate all the functions in a module.
+- You are not required to annotate all the functions in a module.
 
-    -   At least annotate your public APIs.
-    -   Use judgment to get to a good balance between safety and clarity on the
-        one hand, and flexibility on the other.
-    -   Annotate code that is prone to type-related errors (previous bugs or
-        complexity).
-    -   Annotate code that is hard to understand.
-    -   Annotate code as it becomes stable from a types perspective. In many
-        cases, you can annotate all the functions in mature code without losing
-        too much flexibility.
+  - At least annotate your public APIs.
+  - Use judgment to get to a good balance between safety and clarity on the
+    one hand, and flexibility on the other.
+  - Annotate code that is prone to type-related errors (previous bugs or
+    complexity).
+  - Annotate code that is hard to understand.
+  - Annotate code as it becomes stable from a types perspective. In many
+    cases, you can annotate all the functions in mature code without losing
+    too much flexibility.
 
 <a id="s3.19.2-line-breaking"></a>
 <a id="3192-line-breaking"></a>
@@ -3639,7 +3641,7 @@ class OtherClass:
 #### 3.19.4 Default Values
 
 As per [PEP-008](https://peps.python.org/pep-0008/#other-recommendations), use
-spaces around the `=` *only* for arguments that have both a type annotation and
+spaces around the `=` _only_ for arguments that have both a type annotation and
 a default value.
 
 <div class='goodcode'></div>
@@ -3706,12 +3708,12 @@ def implicit_optional(a: str = None) -> str:
 
 You can declare aliases of complex types.
 
-*   The name of an alias should be CapWorded. If the alias is used only in this
-    module, it should be \_Private.
-*   The alias should be type-annotated as `typing.TypeAlias`, to distinguish it
-    from a non-type global variable.
-*   Do not use type aliases as a substitute for the `from module import symbol`
-    idiom, which is [not allowed](#imports).
+- The name of an alias should be CapWorded. If the alias is used only in this
+  module, it should be \_Private.
+- The alias should be type-annotated as `typing.TypeAlias`, to distinguish it
+  from a non-type global variable.
+- Do not use type aliases as a substitute for the `from module import symbol`
+  idiom, which is [not allowed](#imports).
 
 <div class='goodcode'></div>
 
@@ -3766,11 +3768,11 @@ You can disable type checking on a line with the special comment
 #### 3.19.8 Typing Variables
 
 <a id="annotated-assignments"></a>
-[*Annotated Assignments*](#annotated-assignments)
-:   If an internal variable has a type that is hard or impossible to infer,
-    specify its type with an annotated assignment - use a colon and type between
-    the variable name and value (the same as is done with function arguments
-    that have a default value):
+[_Annotated Assignments_](#annotated-assignments)
+: If an internal variable has a type that is hard or impossible to infer,
+specify its type with an annotated assignment - use a colon and type between
+the variable name and value (the same as is done with function arguments
+that have a default value):
 
     <div class='goodcode'></div>
 
@@ -3779,10 +3781,10 @@ You can disable type checking on a line with the special comment
     ```
 
 <a id="type-comments"></a>
-[*Type Comments*](#type-comments)
-:   Though you may see them remaining in the codebase (they were necessary
-    before Python 3.6), do not add any more uses of a `# type: <type name>`
-    comment on the end of the line:
+[_Type Comments_](#type-comments)
+: Though you may see them remaining in the codebase (they were necessary
+before Python 3.6), do not add any more uses of a `# type: <type name>`
+comment on the end of the line:
 
     <div class='badcode'></div>
 
@@ -3869,8 +3871,8 @@ def check_length(x: AnyStr) -> AnyStr:
 A type variable must have a descriptive name, unless it meets all of the
 following criteria:
 
-*   not externally visible
-*   not constrained
+- not externally visible
+- not constrained
 
 <div class='goodcode'></div>
 
@@ -3992,15 +3994,15 @@ imports should be preferred.
 Imports that are needed only for type annotations can be placed within an
 `if TYPE_CHECKING:` block.
 
--   Conditionally imported types need to be referenced as strings, to be forward
-    compatible with Python 3.6 where the annotation expressions are actually
-    evaluated.
--   Only entities that are used solely for typing should be defined here; this
-    includes aliases. Otherwise it will be a runtime error, as the module will
-    not be imported at runtime.
--   The block should be right after all the normal imports.
--   There should be no empty lines in the typing imports list.
--   Sort this list as if it were a regular imports list.
+- Conditionally imported types need to be referenced as strings, to be forward
+  compatible with Python 3.6 where the annotation expressions are actually
+  evaluated.
+- Only entities that are used solely for typing should be defined here; this
+  includes aliases. Otherwise it will be a runtime error, as the module will
+  not be imported at runtime.
+- The block should be right after all the normal imports.
+- There should be no empty lines in the typing imports list.
+- Sort this list as if it were a regular imports list.
 
 <div class='goodcode'></div>
 
@@ -4098,7 +4100,7 @@ def get_names(employee_ids: Sequence[_T]) -> Mapping[_T, str]:
 
 ## 4 Parting Words
 
-*BE CONSISTENT*.
+_BE CONSISTENT_.
 
 If you're editing code, take a few minutes to look at the code around you and
 determine its style. If they use `_idx` suffixes in index variable names, you
