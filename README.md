@@ -93,7 +93,23 @@ Once the skill is loaded, talk naturally:
 - A `changes.json` diff manifest and `review-id` derived from the pinned SHA
 - Mechanical validation by `validate_report.py` before delivery
 
-The skill is **static analysis only**: it does not execute the reviewed code or run its tests, and it never modifies the reviewed code. Language-agnostic rules live in `references/general/`; language-specific knowledge lives only in `references/languages/{lang}/` (a Python pack with the vendored official Google Python Style Guide ships by default).
+The skill is **static analysis only**: it does not execute the reviewed code or run its tests, and it never modifies the reviewed code. Language-agnostic rules live in `references/general/`; language-specific knowledge lives only in `references/languages/{lang}/`. Two packs ship by default: a Python pack with the vendored official Google Python Style Guide, and a Rust pack with a curated, attributed digest of the official Rust Style Guide, the Rust API Guidelines, and Effective Rust. Adding another language means adding one pack directory — no general rule or script changes.
+
+## Language packs
+
+The diff script writes a `language` field for every changed file; the review step
+loads the matching pack automatically. Two packs are bundled:
+
+| Pack      | Covers                          | Normative style authority                                                                                                    |
+| --------- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `python/` | `.py`, `.pyi`                   | Official Google Python Style Guide, vendored verbatim                                                                          |
+| `rust/`   | `.rs`                           | Curated digest of the [Rust Style Guide](https://doc.rust-lang.org/style-guide/), [Rust API Guidelines](https://rust-lang.github.io/api-guidelines/), and [Effective Rust](https://www.effective-rust.com/) |
+
+Each pack ships a `README.md` (index + targeted-read patterns), a
+`review-checklist.md` (concrete checks mapped to general category tags), and its
+style reference. A repository's own `rustfmt.toml`, `clippy.toml`, or style
+configuration takes precedence on conflict. To add a language, follow
+[the pack contract](skills/oh-my-codereview/references/languages/README.md).
 
 ## Repository layout
 
@@ -103,7 +119,7 @@ oh-my-codereview/
 │   ├── SKILL.md                         # Entry point: modes, workflow, dispatch, hard rules
 │   ├── references/
 │   │   ├── general/                     # Language-agnostic review rules
-│   │   └── languages/                   # Pluggable per-language packs (python/ included)
+│   │   └── languages/                   # Pluggable per-language packs (python/ and rust/ included)
 │   └── scripts/
 │       ├── analyze_git_diff.py          # Git/SVN diff analysis → changes.json
 │       └── validate_report.py           # Report skeleton validation

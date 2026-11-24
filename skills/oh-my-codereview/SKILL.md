@@ -5,8 +5,10 @@ description: >-
   structured report with severity-graded, evidence-backed findings, a
   conclusion, and a prioritized todo list. Language-agnostic review rules are
   kept separate from pluggable per-language packs; Python changes are checked
-  against the vendored official Google Python Style Guide. Supports full review
-  and single-category review. Oh-My-CodeReview (OMCR) should be used when the
+  against the vendored official Google Python Style Guide, and Rust changes
+  against a curated digest of the official Rust Style Guide, the Rust API
+  Guidelines, and Effective Rust. Supports full review and single-category
+  review. Oh-My-CodeReview (OMCR) should be used when the
   user asks for a code review, says "review this MR/PR", "review the changes", "review this
   diff against main", asks whether a change is necessary, or asks to review
   only one category such as security, documentation, concurrency, dependencies,
@@ -285,10 +287,14 @@ oh-my-codereview/
 │   │   └── reporting.md             # Single-report format and evidence rules
 │   └── languages/                   # Extensible language-specific layer
 │       ├── README.md                # Pack contract + how to add a language
-│       └── python/
-│           ├── README.md            # Pack index + targeted lookup patterns
-│           ├── google-python-style-guide.md  # Official guide, verbatim + attribution
-│           └── review-checklist.md  # Python instantiations of general rules
+│       ├── python/
+│       │   ├── README.md            # Pack index + targeted lookup patterns
+│       │   ├── google-python-style-guide.md  # Official guide, verbatim + attribution
+│       │   └── review-checklist.md  # Python instantiations of general rules
+│       └── rust/
+│           ├── README.md            # Pack index + authorities + targeted reads
+│           ├── rust-style-reference.md       # Curated, attributed style digest
+│           └── review-checklist.md  # Rust instantiations of general rules
 └── scripts/
     ├── analyze_git_diff.py          # Diff analysis → changes.json
     └── validate_report.py           # Report skeleton validation

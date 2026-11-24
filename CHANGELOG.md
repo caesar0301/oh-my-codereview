@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- Rust language pack (`references/languages/rust/`): `README.md` index, `review-checklist.md` with Rust-specific instantiations of the general category tags, and `rust-style-reference.md`, a curated, attributed digest of the official Rust Style Guide, the Rust API Guidelines, and Effective Rust. Dispatch already worked via `.rs` → `rust` in `analyze_git_diff.py`; no general rule or script changes were needed.
+- README "Language packs" section documenting the bundled Python and Rust packs and their style authorities
+
 ### Changed
 
 - Migrated the `soothe-code-review` skill into this repo as `skills/oh-my-codereview/`, replacing the previous orchestrator-style skill
