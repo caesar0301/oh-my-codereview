@@ -1,0 +1,38 @@
+{
+  "name": "oh-my-codereview",
+  "owner": {
+    "name": "Xiaming Chen",
+    "url": "https://xiaming.site/"
+  },
+  "metadata": {
+    "version": "0.1.0",
+    "description": "Deep static code review of a change set (Git or SVN) that produces one structured, evidence-backed report with severity-graded findings, a conclusion, and a prioritized todo list. Language-agnostic rules stay separate from pluggable per-language packs; supports full and single-category review modes."
+  },
+  "plugins": [
+    {
+      "name": "oh-my-codereview",
+      "description": "Evidence-bound static code review. Pin the reviewed revision, map the change set, apply language-agnostic rules plus pluggable language packs, and deliver a single validated report with severity-graded findings, a conclusion, and a prioritized todo list. Diff-first; full and single-category modes.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Xiaming Chen",
+        "url": "https://xiaming.site/"
+      },
+      "source": "./",
+      "strict": false,
+      "skills": ["./skills/oh-my-codereview"],
+      "category": "workflow",
+      "tags": [
+        "code-review",
+        "pr-review",
+        "static-analysis",
+        "diff",
+        "evidence",
+        "severity",
+        "security",
+        "concurrency",
+        "oh-my-codereview",
+        "omcr"
+      ]
+    }
+  ]
+}
