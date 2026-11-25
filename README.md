@@ -100,10 +100,10 @@ The skill is **static analysis only**: it does not execute the reviewed code or 
 The diff script writes a `language` field for every changed file; the review step
 loads the matching pack automatically. Two packs are bundled:
 
-| Pack      | Covers                          | Normative style authority                                                                                                    |
-| --------- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `python/` | `.py`, `.pyi`                   | Official Google Python Style Guide, vendored verbatim                                                                          |
-| `rust/`   | `.rs`                           | Curated digest of the [Rust Style Guide](https://doc.rust-lang.org/style-guide/), [Rust API Guidelines](https://rust-lang.github.io/api-guidelines/), and [Effective Rust](https://www.effective-rust.com/) |
+| Pack      | Covers        | Normative style authority                                                                                                                                                                                   |
+| --------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `python/` | `.py`, `.pyi` | Official Google Python Style Guide, vendored verbatim                                                                                                                                                       |
+| `rust/`   | `.rs`         | Curated digest of the [Rust Style Guide](https://doc.rust-lang.org/style-guide/), [Rust API Guidelines](https://rust-lang.github.io/api-guidelines/), and [Effective Rust](https://www.effective-rust.com/) |
 
 Each pack ships a `README.md` (index + targeted-read patterns), a
 `review-checklist.md` (concrete checks mapped to general category tags), and its

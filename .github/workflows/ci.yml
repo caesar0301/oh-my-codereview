@@ -23,7 +23,7 @@ jobs:
           node-version: "20"
 
       - name: Install tools
-        run: npm install -g prettier
+        run: npm install -g prettier@3.10.1
 
       - name: Format check (JSON)
         run: make json-check

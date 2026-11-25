@@ -45,14 +45,14 @@ should be cited in the report appendix.
 `review-checklist.md` instantiates these general tags with Rust-specific
 patterns:
 
-| General rule file                | Tags instantiated                                                                       | Rust pack adds                                                                                                                                    |
-| -------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `../../general/scanning.md`      | `[security]`, `[bug]`, `[performance]`, `[resources]`, `[testing]`, `[conciseness]`     | `unsafe` soundness, `unwrap`/panic on untrusted input, integer overflow/ casts, `clone` anti-pattern, iterator vs loop, RAII/Drop, test layering |
-| `../../general/documentation.md` | `[documentation]`                                                                       | rustdoc `# Errors`/`# Panics`/`# Safety`, doctests, intra-doc links, feature docs                                                                 |
-| `../../general/concurrency.md`   | `[concurrency]`                                                                         | `Send`/`Sync`, `Arc<Mutex<T>>` lock scope, poisoning, blocking in async, lock ordering                                                             |
-| `../../general/io.md`            | `[io]`                                                                                  | `Path`/`PathBuf` composition, `BufReader`/`BufWriter` flush, temp files, error propagation on writes                                              |
-| `../../general/dependencies.md`  | `[dependencies]`                                                                        | `Cargo.toml` version requirements, `Cargo.lock`, feature flags, re-exports, license metadata                                                       |
-| — (pack-owned)                   | `[style]`                                                                               | RFC 430 casing, `as_`/`to_`/`into_` conversions, common traits, `From`/`TryFrom`, builders, newtypes, `Debug`, rustfmt defaults                   |
+| General rule file                | Tags instantiated                                                                   | Rust pack adds                                                                                                                                   |
+| -------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `../../general/scanning.md`      | `[security]`, `[bug]`, `[performance]`, `[resources]`, `[testing]`, `[conciseness]` | `unsafe` soundness, `unwrap`/panic on untrusted input, integer overflow/ casts, `clone` anti-pattern, iterator vs loop, RAII/Drop, test layering |
+| `../../general/documentation.md` | `[documentation]`                                                                   | rustdoc `# Errors`/`# Panics`/`# Safety`, doctests, intra-doc links, feature docs                                                                |
+| `../../general/concurrency.md`   | `[concurrency]`                                                                     | `Send`/`Sync`, `Arc<Mutex<T>>` lock scope, poisoning, blocking in async, lock ordering                                                           |
+| `../../general/io.md`            | `[io]`                                                                              | `Path`/`PathBuf` composition, `BufReader`/`BufWriter` flush, temp files, error propagation on writes                                             |
+| `../../general/dependencies.md`  | `[dependencies]`                                                                    | `Cargo.toml` version requirements, `Cargo.lock`, feature flags, re-exports, license metadata                                                     |
+| — (pack-owned)                   | `[style]`                                                                           | RFC 430 casing, `as_`/`to_`/`into_` conversions, common traits, `From`/`TryFrom`, builders, newtypes, `Debug`, rustfmt defaults                  |
 
 Severity, conclusions, feedback tone, and the report format are **not**
 redefined here; they stay in `../../general/severity-and-feedback.md` and
@@ -86,21 +86,21 @@ sed -n '120,180p' "$REF"                    # read one located section
 Frequently used anchors (relocate with `rg` first; line numbers shift if the
 digest is revised):
 
-| Topic                         | Section heading                                  |
-| ----------------------------- | ------------------------------------------------ |
-| Naming / casing               | `## A. Naming and casing`                       |
-| Formatting / rustfmt          | `## B. Formatting (rustfmt default style)`      |
-| Type safety / API design      | `## C. Type safety and API design`              |
-| Error handling                | `## D. Error handling`                          |
-| Ownership / clones            | `## E. Ownership, borrowing, and clones`        |
-| Unsafe / FFI                  | `## F. Unsafe and FFI`                          |
-| Panics                        | `## G. Panics and unwinding`                    |
-| Concurrency                   | `## H. Concurrency`                             |
-| Common traits                 | `## I. Common traits and interoperability`      |
-| Documentation / rustdoc       | `## J. Documentation`                           |
-| Dependencies / features       | `## K. Dependencies and features`               |
-| Tooling / Clippy / CI         | `## L. Tooling`                                 |
-| Iterators / performance       | `## M. Iterators and performance`               |
+| Topic                    | Section heading                            |
+| ------------------------ | ------------------------------------------ |
+| Naming / casing          | `## A. Naming and casing`                  |
+| Formatting / rustfmt     | `## B. Formatting (rustfmt default style)` |
+| Type safety / API design | `## C. Type safety and API design`         |
+| Error handling           | `## D. Error handling`                     |
+| Ownership / clones       | `## E. Ownership, borrowing, and clones`   |
+| Unsafe / FFI             | `## F. Unsafe and FFI`                     |
+| Panics                   | `## G. Panics and unwinding`               |
+| Concurrency              | `## H. Concurrency`                        |
+| Common traits            | `## I. Common traits and interoperability` |
+| Documentation / rustdoc  | `## J. Documentation`                      |
+| Dependencies / features  | `## K. Dependencies and features`          |
+| Tooling / Clippy / CI    | `## L. Tooling`                            |
+| Iterators / performance  | `## M. Iterators and performance`          |
 
 ## Usage
 

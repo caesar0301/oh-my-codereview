@@ -10,6 +10,7 @@
 .PHONY: help format format-json format-yaml format-md check json-check yaml-check md-check install-format-tools
 
 PRETTIER ?= prettier
+PRETTIER_VERSION ?= 3.10.1
 
 # JSON / YAML / Markdown under the repo (exclude caches / venvs)
 FIND_PRUNE := \( -path './.git/*' -o -path './.venv/*' -o -path './venv/*' \
@@ -68,5 +69,5 @@ md-check: ## Check Markdown formatting
 	command -v $(PRETTIER) >/dev/null 2>&1 || { echo "prettier not found. Try: make install-format-tools"; exit 1; }; \
 	$(PRETTIER) --check --prose-wrap preserve $$files
 
-install-format-tools: ## Install prettier globally
-	npm install -g prettier
+install-format-tools: ## Install the pinned prettier version globally
+	npm install -g prettier@$(PRETTIER_VERSION)
